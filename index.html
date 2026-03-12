@@ -1198,6 +1198,27 @@ html, body { height: 100%; margin: 0; padding: 0; }
 body { overflow: hidden; }
 #screen-website { height: 100%; overflow-y: auto; overflow-x: hidden; }
 #screen-login  { display: none; height: 100%; width: 100%; align-items: center; justify-content: center; background: #081828; }
+
+/* Loading overlay — shown while checking auth */
+#sf-loading-screen {
+  display: none;
+  position: fixed; inset: 0; z-index: 9999;
+  background: #081828;
+  flex-direction: column; align-items: center; justify-content: center;
+}
+#sf-loading-screen .sf-loader-orb {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: linear-gradient(135deg, #0FA0A0, #0B7A75);
+  animation: sfPulseLoad 1.2s ease-in-out infinite;
+  margin-bottom: 20px;
+}
+#sf-loading-screen .sf-loader-text {
+  font-family: 'DM Sans', sans-serif; font-size: 14px; color: #6B8BA4;
+}
+@keyframes sfPulseLoad {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
 #screen-today  { display: none; height: 100%; width: 100%; }
 #screen-today.sf-active { display: flex; }
 #screen-crm    { display: none; height: 100%; width: 100%; }
@@ -2065,6 +2086,23 @@ html, body {
 </style>
 </head>
 <body>
+<div id="sf-loading-screen">
+  <div class="sf-loader-orb"></div>
+  <div class="sf-loader-text">Loading SphereFlow…</div>
+</div>
+<script>
+// If there's a hash, show loading and hide website via CSS injection
+(function(){
+  if(window.location.hash && window.location.hash !== '#/' && window.location.hash !== '#'){
+    document.getElementById('sf-loading-screen').style.display = 'flex';
+    // Inject CSS to hide website immediately
+    var s = document.createElement('style');
+    s.id = 'sf-hide-website';
+    s.textContent = '#screen-website{display:none!important}';
+    document.head.appendChild(s);
+  }
+})();
+</script>
 <div id="screen-website">
 
 <!-- NAVIGATION -->
@@ -3900,7 +3938,7 @@ window.sfClearSession = function(){
 };
 
 // ═══ SUPABASE AUTH: RESTORE SESSION ON LOAD ═══
-(async function(){
+window._sfSessionReady = new Promise(async function(resolve){
   try {
     var session = await _sb.auth.getSession();
     if(session.data.session){
@@ -3920,7 +3958,8 @@ window.sfClearSession = function(){
       }
     }
   } catch(e){ console.error('Session restore error:', e); }
-})();
+  resolve();
+});
 
 // Re-mount all React apps (called after onboarding or login)
 window.sfRemountAll = function(){
@@ -13163,9 +13202,17 @@ ReactDOM.render(<GoalTracker/>, document.getElementById('nova-goals-root'));
 
 // Auto-login: if Supabase session exists, skip website and go straight to the app
 (async function autoLogin(){
-  // Wait a beat for Supabase session restore (runs async above)
-  await new Promise(r=>setTimeout(r,500));
-  if(!window._sfLoggedIn || !window._sfSupabaseUser) return;
+  // Wait for Supabase session restore to actually complete
+  if(window._sfSessionReady) await window._sfSessionReady;
+  var loadingEl = document.getElementById('sf-loading-screen');
+
+  if(!window._sfLoggedIn || !window._sfSupabaseUser){
+    // No session — hide loading, show website
+    if(loadingEl) loadingEl.style.display='none';
+    var hideStyle = document.getElementById('sf-hide-website');
+    if(hideStyle) hideStyle.remove();
+    return;
+  }
   // Wait for React components to be ready
   function tryResume(attempts){
     if(window.sfShow && window.sfRemountAll && window._sf_TodayScreen){
@@ -13177,8 +13224,17 @@ ReactDOM.render(<GoalTracker/>, document.getElementById('nova-goals-root'));
       var screen=validScreens.indexOf(hash)>=0?hash:'today';
       window.sfShow(screen, true);
       window.sfRemountAll();
+      // Hide loading screen and remove website hide
+      if(loadingEl) loadingEl.style.display='none';
+      var hideStyle = document.getElementById('sf-hide-website');
+      if(hideStyle) hideStyle.remove();
     } else if(attempts>0){
       setTimeout(function(){ tryResume(attempts-1); },200);
+    } else {
+      // Timeout — show website as fallback
+      if(loadingEl) loadingEl.style.display='none';
+      var hs = document.getElementById('sf-hide-website');
+      if(hs) hs.remove();
     }
   }
   tryResume(25);
