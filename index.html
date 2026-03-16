@@ -194,12 +194,15 @@ nav.scrolled {
    HERO
 ═══════════════════════════════════════ */
 .hero {
-  min-height: 100vh;
+  min-height: auto;
   background: var(--navy);
   position: relative;
   overflow: visible;
   display: flex; flex-direction: column;
   padding-top: 68px;
+}
+@media (min-width: 901px) {
+  .hero { min-height: 100vh; }
 }
 .hero-bg {
   position: absolute; inset: 0; z-index: 0;
@@ -217,7 +220,6 @@ nav.scrolled {
 }
 .hero-content {
   position: relative; z-index: 2;
-  flex: 1;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
   gap: 40px;
@@ -946,6 +948,103 @@ nav.scrolled {
 }
 
 
+/* Scale-dark: opposite of Solo (white). Solo = white bg, navy text. Scale = navy bg, cream text */
+.pricing-card.scale-dark {
+  position: relative;
+  background: var(--navy);
+  border: 1.5px solid rgba(15,160,160,0.3);
+  box-shadow: 0 24px 64px rgba(13,31,53,0.25);
+}
+.pricing-card.scale-dark .pricing-tier { color: var(--teal); }
+.pricing-card.scale-dark .pricing-name { color: var(--cream); }
+.pricing-card.scale-dark .pricing-who { color: rgba(255,255,255,0.5); }
+.pricing-card.scale-dark .pricing-price { color: var(--white); }
+.pricing-card.scale-dark .pricing-price sup { color: var(--white); }
+.pricing-card.scale-dark .pricing-period { color: rgba(255,255,255,0.5); }
+.pricing-card.scale-dark .pricing-divider { background: rgba(255,255,255,0.1); }
+.pricing-card.scale-dark .pricing-features li { color: rgba(255,255,255,0.85); }
+.pricing-card.scale-dark .pricing-features li.disabled { opacity: 0.35; }
+.pricing-card.scale-dark .pricing-features li.disabled .pricing-check { color: rgba(255,255,255,0.25) !important; }
+.pricing-card.scale-dark .pricing-check { color: var(--teal); font-weight: 800; }
+.pricing-card.scale-dark .pricing-features .feat-section { color: var(--teal); opacity: 0.9; }
+.pricing-card.scale-dark .nova-credit-hero {
+  background: rgba(15,160,160,0.1);
+  border-color: rgba(15,160,160,0.2);
+}
+.pricing-card.scale-dark .nova-credit-hero::before {
+  background: radial-gradient(circle, rgba(15,160,160,0.08), transparent 70%);
+}
+.pricing-card.scale-dark .nova-icon { color: var(--teal); }
+.pricing-card.scale-dark .nova-label { color: var(--teal); }
+.pricing-card.scale-dark .nova-credits { color: var(--white); }
+.pricing-card.scale-dark .nova-credits-sub { color: rgba(255,255,255,0.45); }
+.pricing-card.scale-dark .nova-per-seat { color: var(--teal); }
+.pricing-card.scale-dark .btn-plan {
+  background: var(--teal);
+  color: var(--white);
+  border-color: var(--teal);
+  font-weight: 800;
+  box-shadow: 0 8px 24px rgba(15,160,160,0.3);
+}
+.pricing-card.scale-dark .btn-plan:hover {
+  background: #0B8585;
+}
+.pricing-card.scale-dark .best-value-badge {
+  background: var(--teal);
+  color: var(--white);
+}
+
+/* Expansion-gold: white card with all accents in gold */
+.pricing-card.expansion-gold { border-color: rgba(212,168,67,0.3); }
+.pricing-card.expansion-gold:hover { border-color: var(--gold); box-shadow: 0 16px 48px rgba(212,168,67,0.15); }
+.pricing-card.expansion-gold .pricing-tier { color: var(--gold); }
+.pricing-card.expansion-gold .pricing-name { color: #111; }
+.pricing-card.expansion-gold .pricing-who { color: #444; }
+.pricing-card.expansion-gold .pricing-price { color: #111; }
+.pricing-card.expansion-gold .pricing-price sup { color: #111; }
+.pricing-card.expansion-gold .pricing-period { color: #555; }
+.pricing-card.expansion-gold .pricing-divider { background: rgba(212,168,67,0.2); }
+.pricing-card.expansion-gold .pricing-check { color: var(--gold) !important; font-weight: 800; }
+.pricing-card.expansion-gold .pricing-features .feat-section { color: var(--gold); }
+.pricing-card.expansion-gold .pricing-features li { color: #111; }
+.pricing-card.expansion-gold .pricing-features li.disabled .pricing-check { color: rgba(212,168,67,0.3) !important; }
+.pricing-card.expansion-gold .nova-credit-hero {
+  background: rgba(212,168,67,0.08);
+  border-color: rgba(212,168,67,0.2);
+}
+.pricing-card.expansion-gold .nova-credit-hero::before {
+  background: radial-gradient(circle, rgba(212,168,67,0.08), transparent 70%);
+}
+.pricing-card.expansion-gold .nova-icon { color: var(--gold); }
+.pricing-card.expansion-gold .nova-label { color: var(--gold); }
+.pricing-card.expansion-gold .nova-credits { color: #111; }
+.pricing-card.expansion-gold .nova-credits-sub { color: #555; }
+.pricing-card.expansion-gold .nova-per-seat { color: var(--gold); }
+.pricing-card.expansion-gold .btn-plan {
+  background: var(--gold) !important;
+  color: var(--navy) !important;
+  border-color: var(--gold) !important;
+  font-weight: 800;
+  box-shadow: 0 8px 24px rgba(212,168,67,0.3);
+}
+.pricing-card.expansion-gold .btn-plan:hover {
+  background: #C09535 !important;
+}
+
+/* Solo card: black feature text, colored checks, black credits */
+.pricing-card:not(.featured):not(.scale-dark):not(.best-value):not(.expansion-gold) .pricing-features li { color: #111; }
+.pricing-card:not(.featured):not(.scale-dark):not(.best-value):not(.expansion-gold) .pricing-features li.disabled { color: #111; opacity: 0.35; }
+.pricing-card:not(.featured):not(.scale-dark):not(.best-value):not(.expansion-gold) .nova-credits { color: #111; }
+.pricing-card:not(.featured):not(.scale-dark):not(.best-value):not(.expansion-gold) .btn-plan {
+  background: var(--teal) !important;
+  border-color: var(--teal) !important;
+  color: var(--white) !important;
+}
+.pricing-card:not(.featured):not(.scale-dark):not(.best-value):not(.expansion-gold) .btn-plan:hover {
+  background: #0B8585 !important;
+}
+.pricing-card:not(.featured):not(.scale-dark):not(.best-value):not(.expansion-gold) .pricing-features .feat-section { color: var(--teal); }
+
 /* Hide buttons on standard (white) cards, show on featured + best-value */
 .pricing-card .btn-plan { display: block; }
 
@@ -953,7 +1052,7 @@ nav.scrolled {
 
 .pricing-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
   margin-top: 48px;
   align-items: stretch;
@@ -1033,6 +1132,7 @@ nav.scrolled {
   border-radius: 50%;
 }
 .nova-credit-hero .nova-icon {
+  color: var(--teal);
   font-size: 1.4rem;
   margin-bottom: 6px;
 }
@@ -1072,6 +1172,9 @@ nav.scrolled {
 .pricing-card.featured .nova-credit-hero::before {
   background: radial-gradient(circle, rgba(212,168,67,0.2), transparent 70%);
 }
+.pricing-card.featured .nova-icon {
+  color: var(--gold);
+}
 .pricing-card.featured .nova-label {
   color: var(--gold);
 }
@@ -1107,6 +1210,7 @@ nav.scrolled {
   border-radius: 50%;
 }
 .nova-credit-hero .nova-icon {
+  color: var(--teal);
   font-size: 1.4rem;
   margin-bottom: 6px;
 }
@@ -1432,38 +1536,73 @@ footer {
 /* ── MOBILE BOTTOM NAV ── */
 
 @media (max-width: 900px) {
-  .hero-content { grid-template-columns: 1fr; gap: 20px; padding: 40px 20px 40px; }
-  .hero { min-height: auto !important; overflow: visible !important; padding-bottom: 0; }
-  .hero-text h1 { font-size: 2.2rem !important; }
-  .hero-sub { font-size: 0.92rem !important; margin-bottom: 16px !important; }
-  .hero-stats { margin-top: 16px !important; gap: 16px !important; }
-  /* Nova hero: show scaled down, stacked below text */
-  .hero-visual.nova-hero-visual { display: flex !important; min-height: 300px; }
-  .nova-figure-img { height: 280px !important; }
-  .nova-glow-ring { width: 180px !important; height: 180px !important; bottom: 35px !important; }
-  .nova-namecard { padding: 10px 18px !important; }
-  .nova-namecard-name { font-size: 0.95rem !important; }
-  .nova-namecard-role { font-size: 0.7rem !important; }
+  .hero-content { grid-template-columns: 1fr !important; gap: 12px; padding: 16px 16px 8px; }
+  .hero { min-height: auto !important; overflow: hidden !important; padding-bottom: 0 !important; padding-top: 56px !important; display: block !important; height: auto !important; }
+  .hero-bg, .hero-grid { position: absolute; inset: 0; pointer-events: none; }
+  .hero-text h1 { font-size: 1.8rem !important; margin-bottom: 4px !important; }
+  .hero-sub { font-size: 0.82rem !important; margin-bottom: 10px !important; }
+  .hero-badge { font-size: 0.58rem !important; padding: 5px 10px !important; margin-bottom: 12px !important; }
+  /* Buttons side by side */
+  .hero-actions { flex-wrap: nowrap !important; gap: 8px !important; }
+  .hero-actions .btn-primary { padding: 10px 18px !important; font-size: 0.82rem !important; white-space: nowrap; }
+  .hero-actions .btn-ghost  { padding: 10px 14px !important; font-size: 0.82rem !important; white-space: nowrap; }
+  /* Stats all in one row */
+  .hero-stats { margin-top: 12px !important; gap: 12px !important; flex-wrap: nowrap !important; justify-content: space-between; }
+  .hero-stat .num { font-size: 1.4rem !important; }
+  .hero-stat .label { font-size: 0.55rem !important; }
+  /* Nova hero: smaller so visible above fold */
+  .hero-visual.nova-hero-visual { display: flex !important; min-height: auto !important; padding-bottom: 0 !important; margin-bottom: 0 !important; }
+  .nova-figure-img { height: 220px !important; }
+  .nova-glow-ring { width: 140px !important; height: 140px !important; bottom: 30px !important; }
+  .nova-namecard { padding: 6px 12px !important; }
+  .nova-namecard-name { font-size: 0.8rem !important; }
+  .nova-namecard-role { font-size: 0.6rem !important; }
   /* Hide floating badges on mobile — they overlap */
   .nova-badge { display: none !important; }
   .problems-grid {
  grid-template-columns: 1fr; }
+  .problems { padding: 40px 0 !important; }
+  .pricing { padding: 40px 0 !important; }
+  .pricing-header { margin-bottom: 24px !important; }
   .problem-card { border-right: none; border-bottom: 2px solid var(--border); }
   .feature-panel { grid-template-columns: 1fr; }
   .feature-visual { min-height: 280px; }
   .pricing-grid {
-    grid-template-columns: 1fr;
+    display: flex !important;
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
     gap: 16px;
-    overflow-x: visible;
-    margin-left: 0;
-    margin-right: 0;
-    padding-left: 0;
-    padding-right: 0;
+    padding: 0 16px 16px;
+    margin-left: -16px;
+    margin-right: -16px;
+    clip-path: inset(-20px -0px -0px -0px);
+  }
+  /* Move badges inside card on mobile so they don't get clipped */
+  .featured-badge, .best-value-badge {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    display: block !important;
+    margin: 0 auto 12px !important;
+    text-align: center !important;
+    font-size: 0.78rem !important;
+    padding: 8px 24px !important;
+    width: fit-content !important;
   }
   .pricing-card {
-    min-width: auto;
+    min-width: calc(100vw - 64px) !important;
+    max-width: calc(100vw - 64px) !important;
+    flex-shrink: 0 !important;
+    scroll-snap-align: center;
   }
   .pricing-card.featured { transform: none; }
+  .pricing-card.featured { transform: none; }
+  #addon-calc > div:last-of-type { grid-template-columns: 1fr !important; }
+  #addon-list { grid-template-columns: 1fr !important; }
+  #addon-total-panel { position: static !important; }
   .growth-grid { grid-template-columns: 1fr; }
   .brands-grid { grid-template-columns: 1fr; }
   .metrics-grid { grid-template-columns: 1fr 1fr; }
@@ -1473,17 +1612,22 @@ footer {
     display: none;
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(8,24,40,0.97);
+    background: rgba(8,24,40,0.98);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 28px;
+    justify-content: flex-start;
+    gap: 20px;
     z-index: 10000;
-    padding: 20px;
+    padding: 100px 20px 40px;
+    margin: 0;
+    overflow-y: auto;
   }
-  .nav-links.open { display: flex; }
+  .nav-links.open { display: flex !important; }
+  .nav-links li { list-style: none; width: 100%; text-align: center; display: block !important; }
+  .nav-links li a,
+  .nav-links li button { font-size: 1.3rem !important; color: rgba(255,255,255,0.9) !important; display: inline-block !important; padding: 12px 16px !important; background: none !important; border: none !important; }
   .nav-links a { font-size: 1.2rem; }
   .nav-links .nav-cta { padding: 14px 36px; font-size: 1rem !important; }
   .nav-hamburger { display: flex !important; }
@@ -1497,8 +1641,7 @@ footer {
   .switch-card p { font-size: 0.82rem; }
 }
 @media (max-width: 768px) {
-  /* Bottom nav injected by JS — reserve space */
-  body { padding-bottom: 64px !important; }
+  /* Bottom nav space now handled by JS class only when logged in */
 
   /* Hide desktop tab row inside GlobalNav — JS handles this via class */
   .sf-nav-tabs-desktop { display: none !important; }
@@ -1588,19 +1731,19 @@ footer {
 @media (max-width: 600px) {
   .switch-grid, .brands-grid, .metrics-grid { grid-template-columns: 1fr; }
   .pricing-grid {
-    grid-template-columns: 1fr;
-    overflow-x: visible;
-    margin-left: 0;
-    margin-right: 0;
-    padding-left: 0;
-    padding-right: 0;
+    display: flex !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory;
+    gap: 12px;
+    padding: 0 16px 16px;
+    margin-left: -16px;
+    margin-right: -16px;
   }
-  .pricing-card { min-width: auto; min-height: auto; }
-  .hero-stats { flex-wrap: wrap; gap: 20px; }
+  .pricing-card { min-width: calc(100vw - 56px) !important; max-width: calc(100vw - 56px) !important; flex-shrink: 0 !important; min-height: auto; scroll-snap-align: center; }
+  .hero-stats { flex-wrap: nowrap !important; gap: 10px !important; }
   .container { padding: 0 20px; }
 }
 @media (max-width: 480px) {
-  body { padding-bottom: 64px !important; }
 
   [style*="grid-template-columns: 1fr 1fr"] {
     grid-template-columns: 1fr !important;
@@ -3275,8 +3418,8 @@ html, body {
         <div class="pricing-tier">Starter</div>
         <div class="pricing-name">Solo</div>
         <div class="pricing-who">For independent agents</div>
-        <div class="pricing-price" id="price-starter"><sup>$</sup>147</div>
-        <div class="pricing-period">per month</div>
+        <div class="pricing-price" id="price-starter"><sup>$</sup>149</div>
+        <div class="pricing-period">per month <span style="font-size:0.7em;opacity:0.6;">CAD</span></div>
         <div class="nova-credit-hero">
           <div class="nova-icon">✦</div>
           <div class="nova-label">Nova AI Included</div>
@@ -3327,8 +3470,8 @@ html, body {
         <div class="pricing-tier">Professional</div>
         <div class="pricing-name">Growth</div>
         <div class="pricing-who">Agents & small teams</div>
-        <div class="pricing-price" id="price-pro"><sup>$</sup>297</div>
-        <div class="pricing-period">per month</div>
+        <div class="pricing-price" id="price-pro"><sup>$</sup>299</div>
+        <div class="pricing-period">per month <span style="font-size:0.7em;opacity:0.6;">CAD</span></div>
         <div class="nova-credit-hero">
           <div class="nova-icon">✦</div>
           <div class="nova-label">Nova AI Included</div>
@@ -3374,12 +3517,13 @@ html, body {
         </ul>
       </div>
 
-      <div class="pricing-card">
+      <div class="pricing-card scale-dark" style="position:relative;">
+        <div class="best-value-badge">✦ Best Value</div>
         <div class="pricing-tier">Team</div>
         <div class="pricing-name">Scale</div>
         <div class="pricing-who">Large teams + large volume</div>
-        <div class="pricing-price" id="price-team"><sup>$</sup>597</div>
-        <div class="pricing-period">per month</div>
+        <div class="pricing-price" id="price-team"><sup>$</sup>599</div>
+        <div class="pricing-period">per month <span style="font-size:0.7em;opacity:0.6;">CAD</span></div>
         <div class="nova-credit-hero">
           <div class="nova-icon">✦</div>
           <div class="nova-label">Nova AI Included</div>
@@ -3425,12 +3569,12 @@ html, body {
         </ul>
       </div>
 
-      <div class="pricing-card best-value" style="position:relative;">
-        <div class="best-value-badge">✦ Best Value</div>
-        <div class="pricing-tier">Enterprise</div>
-        <div class="pricing-name">Enterprise</div>
-        <div class="pricing-who">Large teams & brokerages</div>
-        <div class="pricing-price" id="price-brokerage"><sup>$</sup>1,197</div>
+      <div class="pricing-card expansion-gold">
+        <div class="featured-badge" style="visibility:hidden;">&#8203;</div>
+        <div class="pricing-tier">Market Leader</div>
+        <div class="pricing-name">Expansion</div>
+        <div class="pricing-who">Teams & top producers</div>
+        <div class="pricing-price" id="price-brokerage"><sup>$</sup>1,199</div>
         <div class="pricing-period">per month <span style="font-size:0.7em;opacity:0.6;">CAD</span></div>
         <div class="nova-credit-hero">
           <div class="nova-icon">✦</div>
@@ -3477,13 +3621,209 @@ html, body {
         </ul>
       </div>
     </div>
-  </div>
 
-    <div style="text-align:center;max-width:720px;margin:32px auto;padding:24px;background:rgba(212,168,67,0.04);border:1px solid rgba(212,168,67,0.15);border-radius:14px;">
-      <p style="font-size:16px;color:#FAF7F2;font-family:DM Sans,sans-serif;margin:0;"><strong>Running a brokerage?</strong> Need maximum output for your entire team?</p>
-      <p style="font-size:13px;color:#6B8BA4;margin:8px 0 16px;font-family:DM Sans,sans-serif;">Custom volume pricing, dedicated onboarding, and priority support for 15+ agents.</p>
-      <button onclick="window.sfShowContactSales()" style="padding:12px 32px;border-radius:8px;border:none;background:linear-gradient(135deg,#D4A843,#C09535);color:#0D1F35;font-size:14px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif;">Contact Sales →</button>
+    <!-- ADD-ON CALCULATOR -->
+    <div id="addon-calc" style="margin-top:48px;background:var(--white);border:1.5px solid var(--border);border-radius:24px;padding:40px 36px;position:relative;">
+      <div style="text-align:center;margin-bottom:32px;">
+        <span class="section-label" style="color:var(--teal);">Customize Your Plan</span>
+        <h3 style="color:var(--navy);font-family:'Playfair Display',serif;font-size:1.5rem;margin:8px 0 6px;">Add-On Packages</h3>
+        <p style="color:var(--muted);font-size:0.9rem;">Select your base plan, then add what you need. We'll show you the smartest option.</p>
+      </div>
+
+      <!-- Base plan selector -->
+      <div style="display:flex;justify-content:center;gap:8px;margin-bottom:28px;flex-wrap:wrap;">
+        <button class="addon-tier-btn active" onclick="window._addonSelectTier(1)" data-tier="1" style="padding:8px 20px;border-radius:100px;border:1.5px solid var(--teal);background:var(--teal);color:var(--white);font-size:0.8rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;">Solo · $149</button>
+        <button class="addon-tier-btn" onclick="window._addonSelectTier(2)" data-tier="2" style="padding:8px 20px;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--navy);font-size:0.8rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;">Growth · $299</button>
+        <button class="addon-tier-btn" onclick="window._addonSelectTier(3)" data-tier="3" style="padding:8px 20px;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--navy);font-size:0.8rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;">Scale · $599</button>
+        <button class="addon-tier-btn" onclick="window._addonSelectTier(4)" data-tier="4" style="padding:8px 20px;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--navy);font-size:0.8rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;">Expansion · $1,199</button>
+      </div>
+
+      <!-- Calculator body: add-ons left, total right -->
+      <div style="display:grid;grid-template-columns:1fr 320px;gap:32px;align-items:start;">
+        <!-- Add-ons list -->
+        <div id="addon-list" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"></div>
+        <!-- Total panel -->
+        <div id="addon-total-panel" style="background:var(--navy);border-radius:16px;padding:24px;position:sticky;top:100px;">
+          <div style="font-size:0.7rem;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin-bottom:12px;font-family:'DM Mono',monospace;">Your Monthly Cost</div>
+          <div id="addon-base-line" style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
+            <span style="color:rgba(255,255,255,0.7);font-size:0.85rem;">Solo plan</span>
+            <span style="color:var(--white);font-weight:700;font-size:0.85rem;">$149</span>
+          </div>
+          <div id="addon-items-summary" style="margin:8px 0;"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid rgba(255,255,255,0.15);margin-top:8px;">
+            <span style="color:var(--white);font-weight:800;font-size:1rem;">Monthly</span>
+            <span id="addon-total-price" style="color:var(--gold);font-weight:900;font-size:1.5rem;font-family:'Playfair Display',serif;">$149</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;">
+            <span style="color:rgba(255,255,255,0.5);font-size:0.8rem;">Annual cost</span>
+            <span id="addon-annual-price" style="color:rgba(255,255,255,0.7);font-weight:700;font-size:0.95rem;font-family:'Playfair Display',serif;">$1,788/yr</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(212,168,67,0.1);border:1px solid rgba(212,168,67,0.2);border-radius:8px;margin-top:6px;">
+            <span style="color:var(--gold);font-size:0.78rem;font-weight:700;">Pay annually (20% off)</span>
+            <span id="addon-annual-discount" style="color:var(--gold);font-weight:900;font-size:0.95rem;font-family:'Playfair Display',serif;">$1,430/yr</span>
+          </div>
+          <div style="text-align:right;margin-top:4px;">
+            <span id="addon-savings" style="color:var(--teal);font-size:0.72rem;font-weight:700;">You save $358/yr</span>
+          </div>
+          <!-- Nova nudge -->
+          <div id="addon-nova-nudge" style="display:none;margin-top:16px;background:rgba(15,160,160,0.1);border:1px solid rgba(15,160,160,0.2);border-radius:12px;padding:12px 14px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+              <span style="font-size:14px;">✦</span>
+              <span style="color:var(--teal);font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">Nova says</span>
+            </div>
+            <p id="addon-nova-msg" style="color:rgba(255,255,255,0.85);font-size:0.8rem;line-height:1.5;margin:0;"></p>
+          </div>
+          <button onclick="sfShow('login')" style="width:100%;margin-top:16px;padding:12px;border-radius:100px;border:none;background:var(--gold);color:var(--navy);font-size:0.9rem;font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif;">Start Free Trial →</button>
+        </div>
+      </div>
     </div>
+
+    <script>
+    (function(){
+      var tierPrices = {1:149, 2:299, 3:599, 4:1199};
+      var tierNames = {1:'Solo', 2:'Growth', 3:'Scale', 4:'Expansion'};
+      var currentTier = 1;
+      var selected = {};
+
+      var addons = [
+        {id:'extraContacts', name:'Extra Contacts', desc:'+2,000 contacts', price:29, icon:'👥', availMin:1, includedMin:5},
+        {id:'extraSMS', name:'Extra SMS Pack', desc:'+1,000 SMS/mo', price:19, icon:'💬', availMin:1, includedMin:5},
+        {id:'extraEmail', name:'Extra Email Pack', desc:'+3,000 emails/mo', price:15, icon:'📧', availMin:1, includedMin:5},
+        {id:'extraCalling', name:'Calling Minutes', desc:'+60 min/mo', price:25, icon:'📞', availMin:1, includedMin:5},
+        {id:'novaBoost', name:'Nova AI Boost', desc:'+5,000 credits', price:35, icon:'✦', availMin:1, includedMin:5},
+        {id:'whiteLabel', name:'White Label', desc:'Custom branding', price:29, icon:'🏷️', availMin:1, includedMin:3},
+        {id:'socialScheduler', name:'Social Scheduler', desc:'Auto-post content', price:25, icon:'📱', availMin:1, includedMin:2},
+        {id:'referralEngine', name:'Referral Engine', desc:'Referral tracking', price:29, icon:'🤝', availMin:1, includedMin:2},
+        {id:'mortgagePipeline', name:'Mortgage Pipeline', desc:'Renewal tracking', price:19, icon:'🏦', availMin:1, includedMin:2},
+        {id:'teamAnalytics', name:'Team Analytics', desc:'Performance reports', price:39, icon:'📊', availMin:1, includedMin:3},
+        {id:'leadRouting', name:'Lead Routing', desc:'Auto-assign leads', price:29, icon:'🔀', availMin:1, includedMin:3},
+        {id:'extraSeats', name:'Extra Seat', desc:'+1 agent seat', price:99, tierPrice:{2:99,3:149,4:249}, icon:'👤', availMin:2, includedMin:5},
+      ];
+
+      function render(){
+        var list = document.getElementById('addon-list');
+        if(!list) return;
+        list.innerHTML = '';
+        addons.forEach(function(a){
+          var included = currentTier >= a.includedMin;
+          var notAvailable = currentTier < a.availMin;
+          var isSelected = selected[a.id];
+          var price = (a.tierPrice && a.tierPrice[currentTier]) ? a.tierPrice[currentTier] : a.price;
+          if(notAvailable && !included) selected[a.id] = false;
+          var card = document.createElement('div');
+          card.style.cssText = 'padding:14px 16px;border-radius:12px;border:1.5px solid '+(included?'rgba(15,160,160,0.2)':isSelected?'var(--teal)':'var(--border)')+';background:'+(included?'rgba(15,160,160,0.04)':isSelected?'rgba(15,160,160,0.06)':'var(--white)')+';cursor:'+((included||notAvailable)?'default':'pointer')+';transition:all 0.15s;display:flex;align-items:center;gap:12px;'+((included||notAvailable)?'opacity:0.5;':'');
+          if(!included && !notAvailable){
+            card.onclick = function(){ selected[a.id] = !selected[a.id]; render(); };
+          }
+          var check = included ? '<span style="color:var(--teal);font-weight:800;font-size:13px;">✓</span>' : (isSelected ? '<span style="width:18px;height:18px;border-radius:4px;background:var(--teal);display:inline-flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:800;flex-shrink:0;">✓</span>' : '<span style="width:18px;height:18px;border-radius:4px;border:1.5px solid var(--border);display:inline-block;flex-shrink:0;"></span>');
+          card.innerHTML = check
+            + '<span style="font-size:18px;flex-shrink:0;">'+a.icon+'</span>'
+            + '<div style="flex:1;min-width:0;">'
+            + '<div style="font-size:0.82rem;font-weight:700;color:var(--navy);">'+a.name+'</div>'
+            + '<div style="font-size:0.7rem;color:var(--muted);">'+a.desc+'</div>'
+            + '</div>'
+            + '<div style="font-size:0.82rem;font-weight:800;color:'+(included?'var(--teal)':notAvailable?'var(--muted)':'var(--navy)')+';">'+(included?'Included':notAvailable?'Not available':'$'+price+'/mo')+'</div>';
+          list.appendChild(card);
+        });
+        updateTotal();
+      }
+
+      function updateTotal(){
+        var base = tierPrices[currentTier];
+        var addonTotal = 0;
+        var addonCount = 0;
+        var summaryHtml = '';
+        addons.forEach(function(a){
+          if(selected[a.id] && currentTier < a.includedMin && currentTier >= a.availMin){
+            var aPrice = (a.tierPrice && a.tierPrice[currentTier]) ? a.tierPrice[currentTier] : a.price;
+            addonTotal += aPrice;
+            addonCount++;
+            summaryHtml += '<div style="display:flex;justify-content:space-between;padding:4px 0;"><span style="color:rgba(255,255,255,0.6);font-size:0.78rem;">'+a.name+'</span><span style="color:rgba(255,255,255,0.85);font-size:0.78rem;font-weight:600;">+$'+aPrice+'</span></div>';
+          }
+        });
+        var total = base + addonTotal;
+        document.getElementById('addon-base-line').innerHTML = '<span style="color:rgba(255,255,255,0.7);font-size:0.85rem;">'+tierNames[currentTier]+' plan</span><span style="color:var(--white);font-weight:700;font-size:0.85rem;">$'+base+'</span>';
+        document.getElementById('addon-items-summary').innerHTML = summaryHtml;
+        document.getElementById('addon-total-price').textContent = '$'+total;
+        var annual = total * 12;
+        document.getElementById('addon-annual-price').textContent = '$'+annual.toLocaleString()+'/yr';
+        var discounted = Math.round(annual * 0.8);
+        var savings = annual - discounted;
+        document.getElementById('addon-annual-discount').textContent = '$'+discounted.toLocaleString()+'/yr';
+        document.getElementById('addon-savings').textContent = 'You save $'+savings.toLocaleString()+'/yr';
+
+        // Nova nudge logic
+        var nudge = document.getElementById('addon-nova-nudge');
+        var msg = document.getElementById('addon-nova-msg');
+        var showNudge = false;
+        var nudgeText = '';
+
+        if(currentTier === 1 && addonTotal >= 80){
+          var savings = total - 299;
+          nudgeText = "You're spending $"+total+"/mo. Growth at $299 includes most of these add-ons and more — you'd save $"+savings+"/mo. Upgrade is the smarter move.";
+          showNudge = true;
+        } else if(currentTier === 1 && addonTotal >= 40){
+          nudgeText = "Getting close to Growth territory! A few more add-ons and upgrading to Growth ($299) becomes the better deal.";
+          showNudge = true;
+        } else if(currentTier === 2 && addonTotal >= 150){
+          var savings2 = total - 599;
+          nudgeText = "At $"+total+"/mo, Scale ($599) would save you $"+savings2+"/mo and unlock team features, analytics, and more.";
+          showNudge = true;
+        } else if(currentTier === 2 && addonTotal >= 80){
+          nudgeText = "With "+addonCount+" add-ons, you're halfway to Scale pricing. Worth considering the upgrade for the full team toolkit.";
+          showNudge = true;
+        } else if(currentTier === 3 && addonTotal >= 200){
+          nudgeText = "At this investment level, Expansion ($1,199) gives you everything included plus API access, custom pipelines, and a dedicated account manager.";
+          showNudge = true;
+        }
+
+        nudge.style.display = showNudge ? 'block' : 'none';
+        if(showNudge) msg.textContent = nudgeText;
+      }
+
+      window._addonSelectTier = function(tier){
+        currentTier = tier;
+        selected = {};
+        document.querySelectorAll('.addon-tier-btn').forEach(function(btn){
+          var t = parseInt(btn.getAttribute('data-tier'));
+          var isActive = t === tier;
+          btn.style.background = isActive ? 'var(--teal)' : 'transparent';
+          btn.style.color = isActive ? 'var(--white)' : 'var(--navy)';
+          btn.style.borderColor = isActive ? 'var(--teal)' : 'var(--border)';
+        });
+        render();
+      };
+
+      render();
+    })();
+    </script>
+
+    <!-- Tier 5: Universe — full width below the grid -->
+    <div class="pricing-ultimate" style="margin-top:40px;background:var(--gold);border-radius:28px;padding:56px 40px 48px;text-align:center;position:relative;overflow:hidden;box-shadow:0 24px 64px rgba(212,168,67,0.35),0 0 0 2px #C09535,0 0 80px rgba(212,168,67,0.15);">
+      <!-- Animated shimmer overlay -->
+      <div style="position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,0.15) 45%,rgba(255,255,255,0.25) 50%,rgba(255,255,255,0.15) 55%,transparent 60%);background-size:200% 100%;animation:universeShimmer 3s ease-in-out infinite;pointer-events:none;"></div>
+      <style>@keyframes universeShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}</style>
+      <!-- Top accent bar -->
+      <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--navy),var(--teal),var(--gold),var(--teal),var(--navy));"></div>
+      <!-- Badge -->
+      <div style="display:inline-block;background:var(--navy);color:var(--gold);padding:8px 24px;border-radius:100px;font-size:0.8rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:20px;box-shadow:0 4px 16px rgba(13,31,53,0.3);">🚀 Need More? We Got You.</div>
+      <!-- Title -->
+      <h3 style="color:var(--navy);font-family:'Playfair Display',serif;font-size:2.6rem;font-weight:900;margin-bottom:12px;letter-spacing:-0.02em;position:relative;">Universe</h3>
+      <p style="color:rgba(13,31,53,0.65);font-size:1.1rem;margin-bottom:32px;max-width:540px;margin-left:auto;margin-right:auto;line-height:1.6;">Multi-agent networks and brokerage-level operations.<br>Custom pricing. Custom onboarding. <strong style="color:var(--navy);">Unlimited everything.</strong></p>
+      <!-- Features grid -->
+      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:14px 20px;margin-bottom:36px;">
+        <span style="background:rgba(13,31,53,0.08);border-radius:100px;padding:8px 18px;color:var(--navy);font-size:0.85rem;font-weight:700;display:inline-flex;align-items:center;gap:6px;"><span style="color:var(--teal);">✓</span> Unlimited seats</span>
+        <span style="background:rgba(13,31,53,0.08);border-radius:100px;padding:8px 18px;color:var(--navy);font-size:0.85rem;font-weight:700;display:inline-flex;align-items:center;gap:6px;"><span style="color:var(--teal);">✓</span> Unlimited contacts</span>
+        <span style="background:rgba(13,31,53,0.08);border-radius:100px;padding:8px 18px;color:var(--navy);font-size:0.85rem;font-weight:700;display:inline-flex;align-items:center;gap:6px;"><span style="color:var(--teal);">✓</span> Unlimited Nova AI</span>
+        <span style="background:rgba(13,31,53,0.08);border-radius:100px;padding:8px 18px;color:var(--navy);font-size:0.85rem;font-weight:700;display:inline-flex;align-items:center;gap:6px;"><span style="color:var(--teal);">✓</span> Custom integrations</span>
+        <span style="background:rgba(13,31,53,0.08);border-radius:100px;padding:8px 18px;color:var(--navy);font-size:0.85rem;font-weight:700;display:inline-flex;align-items:center;gap:6px;"><span style="color:var(--teal);">✓</span> Dedicated success manager</span>
+        <span style="background:rgba(13,31,53,0.08);border-radius:100px;padding:8px 18px;color:var(--navy);font-size:0.85rem;font-weight:700;display:inline-flex;align-items:center;gap:6px;"><span style="color:var(--teal);">✓</span> White-label + API</span>
+      </div>
+      <!-- CTA -->
+      <button onclick="window.sfShowContactSales()" style="padding:18px 48px;border-radius:100px;border:none;background:var(--navy);color:var(--gold);font-size:1.15rem;font-weight:800;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 12px 32px rgba(13,31,53,0.35);transition:all 0.2s;letter-spacing:0.02em;">Contact Sales →</button>
+      <p style="color:rgba(13,31,53,0.4);font-size:0.78rem;margin-top:14px;font-weight:500;">Custom pricing based on team size and needs</p>
+    </div>
+  </div>
 </section>
 
 
@@ -3592,8 +3932,8 @@ function showPanel(id) {
 
 // ── PRICING TOGGLE ──────────────────────────────────────
 const prices = {
-  monthly: { starter: 149, pro: 299, team: 599, brokerage: 1497 },
-  annual:  { starter: 119, pro: 239, team: 509, brokerage: 1347 }
+  monthly: { starter: 149, pro: 299, team: 599, brokerage: 1199 },
+  annual:  { starter: 119, pro: 239, team: 479, brokerage: 959 }
 };
 
 function switchBilling(type) {
@@ -3614,7 +3954,7 @@ function switchBilling(type) {
     {id: 'price-starter', monthly: monthly.starter, annual: annual.starter, save: savings.starter},
     {id: 'price-pro', monthly: monthly.pro, annual: annual.pro, save: savings.pro},
     {id: 'price-team', monthly: monthly.team, annual: annual.team, save: savings.team},
-    {id: 'price-brokerage', monthly: 1197, annual: 1077, save: 1440, hidden: false},
+    {id: 'price-brokerage', monthly: 1199, annual: 959, save: 2880, hidden: false},
   ];
 
   cards.forEach(function(c){
@@ -4061,7 +4401,7 @@ window.sfShowContactSales = function(){
 
 window._sfTier = 1; // Default: Solo (no AI cost)
 window._sfIsDemo = true; // Alex Garcia = demo account, can toggle freely
-window._sfTierNames = {1:'Solo',2:'Growth',3:'Scale',4:'Enterprise'};
+window._sfTierNames = {1:'Solo',2:'Growth',3:'Scale',4:'Expansion'};
 window._sfTierPrices = {1:147,2:297,3:597,4:1197};
 // Communication limits per tier
 window._sfCommsLimits = {
@@ -5559,6 +5899,10 @@ ReactDOM.render(<TodayScreen/>, document.getElementById('today-root'));
         <div class="sidebar-item" onclick="showScene('goals')">
           <span class="icon">🎯</span> Goals
         </div>
+        <div class="sidebar-item" onclick="showScene('voiceai')">
+          <span class="icon">🎙️</span> Voice AI
+          <span class="sidebar-badge green">Live</span>
+        </div>
         <div class="sidebar-gap"></div>
         <div class="nova-status">
           <div class="nova-dot"></div>
@@ -5745,67 +6089,7 @@ ReactDOM.render(<TodayScreen/>, document.getElementById('today-root'));
 
     <!-- SCENE 4: TOOLS -->
     <div class="scene scene-tools" id="scene-tools">
-      <div class="tools-layout">
-        <div class="tools-content">
-          <div class="nova-breadcrumb">
-            <span class="hi">NOVA</span>
-            <span class="sep">→</span>
-            <span>AI TOOLS</span>
-          </div>
-          <div class="tools-header">
-            <div class="tools-question">What would you<br>like me to do?</div>
-            <div class="tools-sub">Pick a tool and I'll get to work.</div>
-          </div>
-          <div class="tool-list">
-            <div class="tool-row" onclick="showScene('chat')">
-              <span class="tool-icon">✍️</span>
-              <div class="tool-info">
-                <div class="tool-name">Follow-Up Writer</div>
-                <div class="tool-desc">Personalised outreach in seconds</div>
-              </div>
-              <span class="tool-arrow">→</span>
-            </div>
-            <div class="tool-row" onclick="showScene('chat')">
-              <span class="tool-icon">🏡</span>
-              <div class="tool-info">
-                <div class="tool-name">Listing Copy</div>
-                <div class="tool-desc">Compelling descriptions instantly</div>
-              </div>
-              <span class="tool-arrow">→</span>
-            </div>
-            <div class="tool-row" onclick="showScene('brief')">
-              <span class="tool-icon">🎯</span>
-              <div class="tool-info">
-                <div class="tool-name">Lead Scorer</div>
-                <div class="tool-desc">AI-ranked priorities for today</div>
-              </div>
-              <span class="tool-arrow">→</span>
-            </div>
-            <div class="tool-row" onclick="showScene('chat')">
-              <span class="tool-icon">🛡️</span>
-              <div class="tool-info">
-                <div class="tool-name">Objection Coach</div>
-                <div class="tool-desc">Handle any pushback confidently</div>
-              </div>
-              <span class="tool-arrow">→</span>
-            </div>
-            <div class="tool-row" onclick="showScene('chat')">
-              <span class="tool-icon">📈</span>
-              <div class="tool-info">
-                <div class="tool-name">Market Brief</div>
-                <div class="tool-desc">Latest trends for your area</div>
-              </div>
-              <span class="tool-arrow">→</span>
-            </div>
-          </div>
-        </div>
-        <div class="tools-nova">
-          <div class="grid-bg" style="opacity:0.3"></div>
-          <div class="tools-nova-placeholder">
-            <span style="animation:float 4s ease-in-out infinite;display:block">👩‍💼</span>
-          </div>
-        </div>
-      </div>
+      <div id="nova-tools-root" style="height:100%;width:100%;overflow:auto;"></div>
     </div>
 
     <!-- SCENE 5: DEAL CLOSED -->
@@ -5983,6 +6267,11 @@ ReactDOM.render(<TodayScreen/>, document.getElementById('today-root'));
       <div id="nova-analytics-root" style="height:100%;width:100%;overflow:auto;"></div>
     </div>
 
+    <!-- SCENE 20: VOICE AI -->
+    <div class="scene scene-voiceai" id="scene-voiceai">
+      <div id="nova-voiceai-root" style="height:100%;width:100%;overflow:auto;"></div>
+    </div>
+
   </main>
     </div>
   </div>
@@ -5998,6 +6287,7 @@ ReactDOM.render(<TodayScreen/>, document.getElementById('today-root'));
         <a href="#" onclick="return false">Terms</a>
         <a href="#" onclick="return false">Support</a>
         <a href="#" onclick="return false">Status</a>
+
       </div>
       <button onclick="window.sfToggleNova&&window.sfToggleNova()" title="Open Nova"
         style="width:52px;height:52px;border-radius:50%;border:none;cursor:pointer;padding:0;
@@ -6706,6 +6996,7 @@ window.sfDeleteAccount = async function() {
 
   function createBottomNav(){
     if(bottomNav) return;
+    document.body.style.paddingBottom = '64px';
     bottomNav = document.createElement('div');
     bottomNav.id = 'sf-mobile-bottom-nav';
     bottomNav.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#0C1E2E;border-top:1px solid rgba(255,255,255,0.08);display:flex;align-items:stretch;height:64px;padding:0 4px;padding-bottom:env(safe-area-inset-bottom,0);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);';
@@ -6762,6 +7053,7 @@ window.sfDeleteAccount = async function() {
       bottomNav.parentNode.removeChild(bottomNav);
       bottomNav = null;
     }
+    document.body.style.paddingBottom = '0';
   }
 
   // Hook into sfShow to update active tab
@@ -9583,10 +9875,10 @@ window.sfShowBilling = function() {
   var hasWL = window._sfWhiteLabel && window._sfWhiteLabel.addOnActive;
 
   var plans = [
-    {tier:1, name:'Solo', price:147, credits:2000, creditsLabel:'2,000/month', features:['500 contacts','1 seat','RE pipeline','Core automations','Nova AI (2,000 credits)','SMS + email (500/mo each)','No in-app calling'], color:'#6B8BA4'},
-    {tier:2, name:'Growth', price:297, credits:10500, creditsLabel:'10,500/month', features:['2,500 contacts','3 seats','Calling (100 min)','Full automations','Nova AI (9,000 credits)','Referral engine','Content engine + AI','Social scheduler'], color:'#0FA0A0', popular:true},
-    {tier:3, name:'Scale', price:597, credits:35000, creditsLabel:'35,000/month', features:['10,000 contacts','10 seats','Team analytics','Lead routing','White-label branding','Calling (300 min)','Nova AI (40,000 credits)'], color:'#5B9BD5'},
-    {tier:4, name:'Enterprise', price:1197, credits:112500, creditsLabel:'112,500/month', features:['15 seats (add agents available)','Custom pipelines','Agent performance reports','Full white-label','API access','Account manager','Nova AI (100,000 credits)'], color:'#D4A843'},
+    {tier:1, name:'Solo', price:149, credits:2000, creditsLabel:'2,000/month', features:['500 contacts','1 seat','RE pipeline','Core automations','Nova AI (2,000 credits)','SMS + email (500/mo each)','No in-app calling'], color:'#6B8BA4'},
+    {tier:2, name:'Growth', price:299, credits:10500, creditsLabel:'10,500/month', features:['2,500 contacts','3 seats','Calling (100 min)','Full automations','Nova AI (9,000 credits)','Referral engine','Content engine + AI','Social scheduler'], color:'#0FA0A0', popular:true},
+    {tier:3, name:'Scale', price:599, credits:35000, creditsLabel:'35,000/month', features:['10,000 contacts','10 seats','Team analytics','Lead routing','White-label branding','Calling (300 min)','Nova AI (40,000 credits)'], color:'#5B9BD5'},
+    {tier:4, name:'Expansion', price:1199, credits:112500, creditsLabel:'112,500/month', features:['15 seats (add agents available)','Custom pipelines','Agent performance reports','Full white-label','API access','Account manager','Nova AI (100,000 credits)'], color:'#D4A843'},
   ];
 
   var planCardsHtml = plans.map(function(p){
@@ -10040,12 +10332,14 @@ window.sfShowProfile = function() {
 // ═══ ADMIN DASHBOARD ═══
 
 // ═══ TIER-GATED API WRAPPER ═══
+// ══ PROXY CONFIG ══
+// Set this to your Cloudflare Worker URL
+window.SF_API_PROXY = 'https://sphereflow-proxy.jsingh4.workers.dev';
+
 window._sfGatedFetch = async function(url, opts) {
   var actionType = window._sfCurrentAction || 'message';
-  // Tool access check — some tools require higher tiers
+  // Tool access check
   if(!window._sfCanUseTool(actionType)){
-    var toolInfo = window._sfToolAccess[actionType] || 2;
-    var tierName = window._sfTierNames[toolInfo] || 'Growth';
     window._sfShowUpgradeDOM(actionType === 'listing' ? 'contentEngine' : actionType === 'content' ? 'contentEngine' : actionType === 'coaching' ? 'novaAI' : actionType === 'insight' ? 'novaAI' : 'novaAI');
     throw new Error('TOOL_LOCKED');
   }
@@ -10054,9 +10348,35 @@ window._sfGatedFetch = async function(url, opts) {
     window._sfShowCreditsDepletedDOM(actionType);
     throw new Error('CREDITS_DEPLETED');
   }
-  var result = await fetch(url, opts);
+  // Route through proxy — no API key needed from user
+  var targetUrl = window.SF_API_PROXY;
+  if(!targetUrl){
+    window._sfShowProxyPrompt();
+    throw new Error('NO_PROXY');
+  }
+  var o = opts || {};
+  o.headers = o.headers || {};
+  // Don't send any API key from the browser
+  delete o.headers['x-api-key'];
+  delete o.headers['anthropic-version'];
+  delete o.headers['anthropic-dangerous-direct-browser-access'];
+  var result = await fetch(targetUrl, o);
   window._sfSpendCredits(actionType);
   return result;
+};
+
+// Admin-only proxy setup prompt (only shown if proxy isn't configured)
+window._sfShowProxyPrompt = function(){
+  if(document.getElementById('sf-proxy-modal')) return;
+  var m = document.createElement('div');
+  m.id = 'sf-proxy-modal';
+  m.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;';
+  m.innerHTML = '<div style="background:#0C1E2E;border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:32px;max-width:440px;width:90%;font-family:DM Sans,sans-serif;">'
+    +'<div style="font-size:18px;font-weight:700;color:#F0F4F8;margin-bottom:8px;">Nova AI is setting up</div>'
+    +'<p style="font-size:13px;color:#6B8BA4;margin-bottom:20px;line-height:1.6;">Nova AI features require the server connection. This will be available shortly.</p>'
+    +'<button onclick="document.getElementById(\'sf-proxy-modal\').remove();" style="width:100%;padding:12px;border-radius:10px;border:none;background:#0FA0A0;color:#fff;font-size:14px;font-weight:700;cursor:pointer;">Got it</button>'
+    +'</div>';
+  document.body.appendChild(m);
 };
 </script>
 
@@ -11693,7 +12013,7 @@ function showScene(name) {
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
 
   const sceneToSidebar = {
-    welcome: 0, brief: 1, alert: 2, tools: 3, chat: 4, content: 5, templates: 6, automations: 7, comms: 8, schedule: 9, emailcamp: 10, reputation: 11, funnels: 12, invoicing: 13, forms: 14, docvault: 15, analytics: 16, goals: 17
+    welcome: 0, brief: 1, alert: 2, tools: 3, chat: 4, content: 5, templates: 6, automations: 7, comms: 8, schedule: 9, emailcamp: 10, reputation: 11, funnels: 12, invoicing: 13, forms: 14, docvault: 15, analytics: 16, goals: 17, voiceai: 18
   };
   if (sceneToSidebar[name] !== undefined) {
     var items = document.querySelectorAll('.sidebar-item');
@@ -16164,10 +16484,10 @@ function OnboardingWizard(){
     // Step 2: Choose Your Plan
     ()=>{
       const plans=[
-        {id:'solo',name:'Solo',price:'$97',period:'/mo',desc:'For independent agents',features:['500 contacts','Real estate pipeline','Nova AI (2,000 credits)','Core automations','SMS + email (500/mo each)','No in-app calling'],color:C.teal,popular:false},
-        {id:'growth',name:'Growth',price:'$197',period:'/mo',desc:'Agents & small teams',features:['2,500 contacts','Nova AI (9,000 credits)','Listing + content engine','Referral engine','RE + mortgage pipeline'],color:C.gold,popular:true},
-        {id:'scale',name:'Scale',price:'$397',period:'/mo',desc:'Teams of 4–15 agents',features:['10,000 contacts','Nova AI (40,000 credits)','Team analytics','Lead routing + white-label','Unlimited SMS + email'],color:'#5B9BD5',popular:false},
-        {id:'enterprise',name:'Enterprise',price:'$797',period:'/mo',desc:'Large teams & brokerages',features:['20 agent seats included','Nova AI (100,000 credits)','Custom pipelines + branding','API access','Add agents at $249/mo (Growth access)'],color:'#9B7FD4',popular:false},
+        {id:'solo',name:'Solo',price:'$149',period:'/mo',desc:'For independent agents',features:['500 contacts','Real estate pipeline','Nova AI (2,000 credits)','Core automations','SMS + email (500/mo each)','No in-app calling'],color:C.teal,popular:false},
+        {id:'growth',name:'Growth',price:'$299',period:'/mo',desc:'Agents & small teams',features:['2,500 contacts','Nova AI (9,000 credits)','Listing + content engine','Referral engine','RE + mortgage pipeline'],color:C.gold,popular:true},
+        {id:'scale',name:'Scale',price:'$599',period:'/mo',desc:'Teams of 4–15 agents',features:['10,000 contacts','Nova AI (40,000 credits)','Team analytics','Lead routing + white-label','Unlimited SMS + email'],color:'#5B9BD5',popular:false},
+        {id:'enterprise',name:'Expansion',price:'$1,199',period:'/mo',desc:'Expanding influence & team leverage',features:['15 agent seats included','Nova AI (112,500 credits)','Custom pipelines + branding','API access','Add agents at $249/mo (Growth access)'],color:'#9B7FD4',popular:false},
       ];
       return(
         <div style={{maxWidth:720,margin:'0 auto'}}>
@@ -21610,6 +21930,593 @@ function AnalyticsDashboard(){
 ReactDOM.render(<AnalyticsDashboard/>, document.getElementById('nova-analytics-root'));
 })();
 </script>
+
+<!-- ═══════════════════════════════════════════════════════
+     SCENE 20 — VOICE AI
+═══════════════════════════════════════════════════════ -->
+<script type="text/babel">
+(function(){
+const C={bg:'#081828',bg2:'#0C1E2E',bg3:'#0F2336',card:'rgba(255,255,255,0.03)',border:'rgba(255,255,255,0.07)',border2:'rgba(255,255,255,0.1)',teal:'#0FA0A0',teal2:'#0B7A75',gold:'#D4A843',white:'#F0F4F8',muted:'#6B8BA4',muted2:'#4A6882',pink:'#E91E8C',purple:'#9B7FD4',green:'#2ECC71',red:'#E74C3C',blue:'#3498DB'};
+const NOVA_AVATAR=window._NOVA_AVATAR;
+
+function VoiceAI(){
+  const isFresh=window.sfIsNewUser&&window.sfIsNewUser();
+  const [enabled,setEnabled]=React.useState(true);
+  const [tab,setTab]=React.useState('overview');
+  const [agentName,setAgentName]=React.useState('Nova');
+  const [greeting,setGreeting]=React.useState("Hi, this is Nova from "+((window._sfUserName||'your agent')+"'s team")+". How can I help you today?");
+  const [personality,setPersonality]=React.useState('professional');
+  const [afterHours,setAfterHours]=React.useState('voicemail');
+  const [businessHours,setBusinessHours]=React.useState({start:'09:00',end:'18:00'});
+  const [canBook,setCanBook]=React.useState(true);
+  const [canQualify,setCanQualify]=React.useState(true);
+  const [canTransfer,setCanTransfer]=React.useState(true);
+  const [testActive,setTestActive]=React.useState(false);
+  const [testTimer,setTestTimer]=React.useState(0);
+  const timerRef=React.useRef(null);
+
+  // Demo call log data
+  const [calls]=React.useState(isFresh?[]:[
+    {id:1,caller:'Sarah Chen',phone:'(416) 555-0142',duration:'2:34',outcome:'appointment',date:'Today, 10:42 AM',summary:'Asked about 3BR listings in Oakville. Booked showing for Thursday 2pm.',sentiment:'positive'},
+    {id:2,caller:'Unknown',phone:'(905) 555-0871',duration:'1:12',outcome:'qualified',date:'Today, 9:15 AM',summary:'First-time buyer, pre-approved $650K. Looking in Mississauga. Wants callback.',sentiment:'positive'},
+    {id:3,caller:'Marcus Rivera',phone:'(905) 555-0198',duration:'3:47',outcome:'transfer',date:'Yesterday, 4:30 PM',summary:'Existing client with offer questions. Transferred to agent.',sentiment:'neutral'},
+    {id:4,caller:'Unknown',phone:'(647) 555-0333',duration:'0:28',outcome:'voicemail',date:'Yesterday, 8:02 PM',summary:'After-hours call. Left voicemail. AI collected name: David Park.',sentiment:'neutral'},
+    {id:5,caller:'Jessica Wong',phone:'(416) 555-0267',duration:'4:15',outcome:'appointment',date:'Mar 13, 2:20 PM',summary:'Seller interested in listing. AI discussed market conditions, booked listing presentation for Monday.',sentiment:'positive'},
+    {id:6,caller:'Unknown',phone:'(905) 555-0499',duration:'0:45',outcome:'qualified',date:'Mar 13, 11:05 AM',summary:'Investor looking for multi-unit properties. Budget $1.2M. Wants info packet emailed.',sentiment:'positive'},
+  ]);
+
+  const stats={
+    totalCalls:calls.length,
+    answered:calls.filter(c=>c.outcome!=='voicemail').length,
+    booked:calls.filter(c=>c.outcome==='appointment').length,
+    qualified:calls.filter(c=>c.outcome==='qualified').length,
+    avgDuration:calls.length?Math.round(calls.reduce((s,c)=>{const p=c.duration.split(':');return s+parseInt(p[0])*60+parseInt(p[1]);},0)/calls.length):0,
+  };
+
+  function startTest(){
+    setTestActive(true);setTestTimer(0);
+    timerRef.current=setInterval(()=>setTestTimer(t=>t+1),1000);
+  }
+  function stopTest(){
+    setTestActive(false);clearInterval(timerRef.current);
+  }
+  function fmtTimer(s){return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
+
+  const outcomeColors={appointment:C.green,qualified:C.gold,transfer:C.blue,voicemail:C.muted};
+  const outcomeLabels={appointment:'Booked',qualified:'Qualified',transfer:'Transferred',voicemail:'Voicemail'};
+  const personalityOpts=[
+    {id:'professional',label:'Professional',desc:'Polished, business-like tone'},
+    {id:'friendly',label:'Friendly',desc:'Warm, conversational, approachable'},
+    {id:'concise',label:'Concise',desc:'Short, efficient, direct answers'},
+  ];
+
+  const DCard=({children,style:s={}})=><div style={{background:C.card,border:'1px solid '+C.border,borderRadius:16,padding:'20px 22px',...s}}>{children}</div>;
+
+  const TABS=[
+    {id:'overview',label:'Overview',icon:'📊'},
+    {id:'calls',label:'Call Log',icon:'📞'},
+    {id:'config',label:'Configure',icon:'⚙️'},
+    {id:'test',label:'Test Agent',icon:'🎙️'},
+  ];
+
+  return (
+    <div style={{padding:'28px 32px',maxWidth:1100,margin:'0 auto',fontFamily:"'DM Sans',sans-serif"}}>
+      {/* Header */}
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:24}}>
+        <div>
+          <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:4}}>
+            <span style={{fontSize:24}}>🎙️</span>
+            <h1 style={{fontSize:22,fontWeight:700,color:C.white,margin:0}}>Voice AI Receptionist</h1>
+            <span style={{fontSize:10,fontWeight:700,background:'rgba(15,160,160,0.15)',color:C.teal,padding:'3px 10px',borderRadius:100,textTransform:'uppercase',letterSpacing:'0.08em'}}>Powered by Nova</span>
+          </div>
+          <p style={{fontSize:13,color:C.muted,margin:0}}>Your AI answers calls, qualifies leads, and books appointments 24/7</p>
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:12}}>
+          <span style={{fontSize:12,color:enabled?C.green:C.muted,fontWeight:600}}>{enabled?'Active':'Paused'}</span>
+          <div onClick={()=>setEnabled(!enabled)} style={{width:44,height:24,borderRadius:12,background:enabled?C.teal:'rgba(255,255,255,0.1)',cursor:'pointer',position:'relative',transition:'all 0.2s'}}>
+            <div style={{width:18,height:18,borderRadius:9,background:C.white,position:'absolute',top:3,left:enabled?23:3,transition:'left 0.2s',boxShadow:'0 1px 3px rgba(0,0,0,0.3)'}}/>
+          </div>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div style={{display:'flex',gap:4,marginBottom:24,background:'rgba(255,255,255,0.03)',borderRadius:12,padding:4,border:'1px solid '+C.border}}>
+        {TABS.map(t=>(
+          <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,padding:'10px 16px',borderRadius:10,border:'none',background:tab===t.id?'rgba(15,160,160,0.15)':'transparent',color:tab===t.id?C.teal:C.muted,fontSize:13,fontWeight:tab===t.id?700:500,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:6,transition:'all 0.15s',fontFamily:'inherit'}}>
+            <span style={{fontSize:14}}>{t.icon}</span>{t.label}
+          </button>
+        ))}
+      </div>
+
+      {/* OVERVIEW TAB */}
+      {tab==='overview'&&(
+        <div>
+          {/* Stats row */}
+          <div style={{display:'grid',gridTemplateColumns:'repeat(5,1fr)',gap:12,marginBottom:24}}>
+            {[
+              {label:'Total calls',value:stats.totalCalls,color:C.white},
+              {label:'Answered',value:stats.answered,color:C.teal},
+              {label:'Appointments booked',value:stats.booked,color:C.green},
+              {label:'Leads qualified',value:stats.qualified,color:C.gold},
+              {label:'Avg duration',value:fmtTimer(stats.avgDuration),color:C.white},
+            ].map((s,i)=>(
+              <DCard key={i}><div style={{fontSize:11,color:C.muted,textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:6}}>{s.label}</div><div style={{fontSize:24,fontWeight:800,color:s.color,fontFamily:"'Playfair Display',serif"}}>{s.value}</div></DCard>
+            ))}
+          </div>
+
+          {/* Recent calls preview */}
+          <DCard style={{marginBottom:24}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}>
+              <div style={{fontSize:14,fontWeight:700,color:C.white}}>Recent calls</div>
+              <button onClick={()=>setTab('calls')} style={{fontSize:12,color:C.teal,background:'none',border:'none',cursor:'pointer',fontWeight:600}}>View all →</button>
+            </div>
+            {calls.slice(0,3).map(c=>(
+              <div key={c.id} style={{display:'flex',alignItems:'center',gap:14,padding:'12px 0',borderTop:'1px solid '+C.border}}>
+                <div style={{width:36,height:36,borderRadius:'50%',background:'rgba(15,160,160,0.1)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:14,color:C.teal,flexShrink:0}}>📞</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:13,fontWeight:600,color:C.white}}>{c.caller}</div>
+                  <div style={{fontSize:11,color:C.muted,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{c.summary}</div>
+                </div>
+                <div style={{textAlign:'right',flexShrink:0}}>
+                  <span style={{fontSize:10,fontWeight:700,color:outcomeColors[c.outcome],background:outcomeColors[c.outcome]+'20',padding:'2px 8px',borderRadius:100}}>{outcomeLabels[c.outcome]}</span>
+                  <div style={{fontSize:10,color:C.muted,marginTop:4}}>{c.date}</div>
+                </div>
+              </div>
+            ))}
+          </DCard>
+
+          {/* Nova insight */}
+          <DCard style={{background:'rgba(15,160,160,0.06)',borderColor:'rgba(15,160,160,0.2)'}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}>
+              {NOVA_AVATAR&&<img src={NOVA_AVATAR} style={{width:28,height:28,borderRadius:'50%',objectFit:'cover',objectPosition:'center top',border:'1px solid rgba(15,160,160,0.3)'}}/>}
+              <span style={{fontSize:12,fontWeight:700,color:C.teal,textTransform:'uppercase',letterSpacing:'0.06em'}}>Nova insight</span>
+            </div>
+            <p style={{fontSize:13,color:'rgba(255,255,255,0.8)',lineHeight:1.7,margin:0}}>
+              Your Voice AI handled <strong style={{color:C.white}}>6 calls</strong> this week, booking <strong style={{color:C.green}}>2 appointments</strong> and qualifying <strong style={{color:C.gold}}>2 new leads</strong> — that's $0 in missed opportunities.
+              Peak call time is <strong style={{color:C.white}}>9-11 AM</strong>. Consider enabling outbound follow-up calls during slow afternoons to maximize pipeline velocity.
+            </p>
+          </DCard>
+        </div>
+      )}
+
+      {/* CALL LOG TAB */}
+      {tab==='calls'&&(
+        <div>
+          {calls.length===0?(
+            <DCard style={{textAlign:'center',padding:48}}>
+              <div style={{fontSize:48,marginBottom:12}}>🎙️</div>
+              <div style={{fontSize:16,fontWeight:600,color:C.white,marginBottom:6}}>No calls yet</div>
+              <div style={{fontSize:13,color:C.muted}}>Once your Voice AI phone number is active, call logs will appear here with full transcripts.</div>
+            </DCard>
+          ):calls.map(c=>(
+            <DCard key={c.id} style={{marginBottom:12}}>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:10}}>
+                <div style={{display:'flex',alignItems:'center',gap:12}}>
+                  <div style={{width:40,height:40,borderRadius:'50%',background:outcomeColors[c.outcome]+'20',display:'flex',alignItems:'center',justifyContent:'center',fontSize:16}}>{c.outcome==='appointment'?'📅':c.outcome==='qualified'?'⭐':c.outcome==='transfer'?'↗️':'📩'}</div>
+                  <div>
+                    <div style={{fontSize:14,fontWeight:700,color:C.white}}>{c.caller}</div>
+                    <div style={{fontSize:12,color:C.muted}}>{c.phone} · {c.duration}</div>
+                  </div>
+                </div>
+                <div style={{textAlign:'right'}}>
+                  <span style={{fontSize:11,fontWeight:700,color:outcomeColors[c.outcome],background:outcomeColors[c.outcome]+'20',padding:'3px 10px',borderRadius:100}}>{outcomeLabels[c.outcome]}</span>
+                  <div style={{fontSize:11,color:C.muted,marginTop:4}}>{c.date}</div>
+                </div>
+              </div>
+              <div style={{fontSize:13,color:'rgba(255,255,255,0.75)',lineHeight:1.6,padding:'10px 14px',background:'rgba(255,255,255,0.02)',borderRadius:10,border:'1px solid '+C.border}}>
+                <span style={{fontSize:10,fontWeight:700,color:C.teal,textTransform:'uppercase',letterSpacing:'0.08em',display:'block',marginBottom:4}}>AI Summary</span>
+                {c.summary}
+              </div>
+              {c.outcome==='qualified'&&(
+                <button onClick={()=>window.sfShow&&window.sfShow('crm')} style={{marginTop:10,padding:'8px 16px',borderRadius:8,border:'1px solid rgba(15,160,160,0.3)',background:'rgba(15,160,160,0.1)',color:C.teal,fontSize:12,fontWeight:600,cursor:'pointer'}}>+ Add to CRM</button>
+              )}
+            </DCard>
+          ))}
+        </div>
+      )}
+
+      {/* CONFIGURE TAB */}
+      {tab==='config'&&(
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
+          {/* Left column */}
+          <div>
+            <DCard style={{marginBottom:16}}>
+              <div style={{fontSize:14,fontWeight:700,color:C.white,marginBottom:16}}>Agent personality</div>
+              {personalityOpts.map(p=>(
+                <div key={p.id} onClick={()=>setPersonality(p.id)} style={{display:'flex',alignItems:'center',gap:12,padding:'12px 14px',borderRadius:10,border:'1px solid '+(personality===p.id?C.teal:C.border),background:personality===p.id?'rgba(15,160,160,0.08)':'transparent',cursor:'pointer',marginBottom:8,transition:'all 0.15s'}}>
+                  <div style={{width:18,height:18,borderRadius:9,border:'2px solid '+(personality===p.id?C.teal:C.muted),display:'flex',alignItems:'center',justifyContent:'center'}}>
+                    {personality===p.id&&<div style={{width:10,height:10,borderRadius:5,background:C.teal}}/>}
+                  </div>
+                  <div>
+                    <div style={{fontSize:13,fontWeight:600,color:C.white}}>{p.label}</div>
+                    <div style={{fontSize:11,color:C.muted}}>{p.desc}</div>
+                  </div>
+                </div>
+              ))}
+            </DCard>
+
+            <DCard>
+              <div style={{fontSize:14,fontWeight:700,color:C.white,marginBottom:16}}>Business hours</div>
+              <div style={{display:'flex',gap:12,marginBottom:16}}>
+                <div style={{flex:1}}>
+                  <label style={{fontSize:11,color:C.muted,display:'block',marginBottom:4}}>Opens</label>
+                  <input type="time" value={businessHours.start} onChange={e=>setBusinessHours({...businessHours,start:e.target.value})} style={{width:'100%',padding:'8px 12px',borderRadius:8,border:'1px solid '+C.border2,background:C.bg2,color:C.white,fontSize:13}}/>
+                </div>
+                <div style={{flex:1}}>
+                  <label style={{fontSize:11,color:C.muted,display:'block',marginBottom:4}}>Closes</label>
+                  <input type="time" value={businessHours.end} onChange={e=>setBusinessHours({...businessHours,end:e.target.value})} style={{width:'100%',padding:'8px 12px',borderRadius:8,border:'1px solid '+C.border2,background:C.bg2,color:C.white,fontSize:13}}/>
+                </div>
+              </div>
+              <div style={{fontSize:12,fontWeight:600,color:C.white,marginBottom:8}}>After-hours behavior</div>
+              {['voicemail','always-on','off'].map(opt=>(
+                <div key={opt} onClick={()=>setAfterHours(opt)} style={{display:'flex',alignItems:'center',gap:8,padding:'8px 0',cursor:'pointer'}}>
+                  <div style={{width:16,height:16,borderRadius:8,border:'2px solid '+(afterHours===opt?C.teal:C.muted),display:'flex',alignItems:'center',justifyContent:'center'}}>
+                    {afterHours===opt&&<div style={{width:8,height:8,borderRadius:4,background:C.teal}}/>}
+                  </div>
+                  <span style={{fontSize:12,color:afterHours===opt?C.white:C.muted,fontWeight:afterHours===opt?600:400}}>{opt==='voicemail'?'Take voicemail + collect info':opt==='always-on'?'AI answers 24/7 (recommended)':'Turn off after hours'}</span>
+                </div>
+              ))}
+            </DCard>
+          </div>
+
+          {/* Right column */}
+          <div>
+            <DCard style={{marginBottom:16}}>
+              <div style={{fontSize:14,fontWeight:700,color:C.white,marginBottom:16}}>Greeting script</div>
+              <textarea value={greeting} onChange={e=>setGreeting(e.target.value)} rows={4} style={{width:'100%',padding:'12px 14px',borderRadius:10,border:'1px solid '+C.border2,background:C.bg2,color:C.white,fontSize:13,lineHeight:1.6,resize:'vertical',fontFamily:'inherit'}}/>
+              <div style={{fontSize:11,color:C.muted,marginTop:6}}>This is what callers hear first. Keep it under 15 seconds.</div>
+            </DCard>
+
+            <DCard>
+              <div style={{fontSize:14,fontWeight:700,color:C.white,marginBottom:16}}>Capabilities</div>
+              {[
+                {key:'book',label:'Book appointments',desc:'AI checks your calendar and schedules showings',value:canBook,set:setCanBook},
+                {key:'qualify',label:'Qualify leads',desc:'Ask budget, timeline, location preferences',value:canQualify,set:setCanQualify},
+                {key:'transfer',label:'Live transfer',desc:'Transfer to your cell when caller requests',value:canTransfer,set:setCanTransfer},
+              ].map(cap=>(
+                <div key={cap.key} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'14px 0',borderBottom:'1px solid '+C.border}}>
+                  <div>
+                    <div style={{fontSize:13,fontWeight:600,color:C.white}}>{cap.label}</div>
+                    <div style={{fontSize:11,color:C.muted}}>{cap.desc}</div>
+                  </div>
+                  <div onClick={()=>cap.set(!cap.value)} style={{width:40,height:22,borderRadius:11,background:cap.value?C.teal:'rgba(255,255,255,0.1)',cursor:'pointer',position:'relative',transition:'all 0.2s',flexShrink:0}}>
+                    <div style={{width:16,height:16,borderRadius:8,background:C.white,position:'absolute',top:3,left:cap.value?21:3,transition:'left 0.2s'}}/>
+                  </div>
+                </div>
+              ))}
+
+              <div style={{marginTop:20,padding:'14px 16px',background:'rgba(212,168,67,0.06)',border:'1px solid rgba(212,168,67,0.15)',borderRadius:10}}>
+                <div style={{fontSize:11,fontWeight:700,color:C.gold,textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:4}}>Phone number</div>
+                <div style={{fontSize:14,color:C.white,fontWeight:600,fontFamily:"'DM Mono',monospace"}}>+1 (905) 555-NOVA</div>
+                <div style={{fontSize:11,color:C.muted,marginTop:4}}>Share this number on your listings, ads, and business cards. Nova answers every call.</div>
+              </div>
+            </DCard>
+          </div>
+        </div>
+      )}
+
+      {/* TEST AGENT TAB */}
+      {tab==='test'&&(
+        <div style={{maxWidth:500,margin:'0 auto'}}>
+          <DCard style={{textAlign:'center',padding:40}}>
+            <div style={{width:100,height:100,borderRadius:'50%',background:testActive?'rgba(15,160,160,0.15)':'rgba(255,255,255,0.04)',border:'2px solid '+(testActive?C.teal:C.border),display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 20px',transition:'all 0.3s',animation:testActive?'novaPulse 2s ease-in-out infinite':'none'}}>
+              {NOVA_AVATAR?<img src={NOVA_AVATAR} style={{width:80,height:80,borderRadius:'50%',objectFit:'cover',objectPosition:'center top'}}/>:<span style={{fontSize:40}}>🎙️</span>}
+            </div>
+            {testActive?(
+              <div>
+                <div style={{fontSize:28,fontWeight:800,color:C.teal,fontFamily:"'Playfair Display',serif",marginBottom:4}}>{fmtTimer(testTimer)}</div>
+                <div style={{fontSize:13,color:C.muted,marginBottom:8}}>Speaking with Nova...</div>
+                <div style={{display:'flex',justifyContent:'center',gap:6,marginBottom:24}}>
+                  {[0,1,2,3,4].map(i=><div key={i} style={{width:4,height:16+Math.random()*16,background:C.teal,borderRadius:2,animation:'novaFloat '+(0.3+i*0.1)+'s ease-in-out infinite alternate'}}/>)}
+                </div>
+                <button onClick={stopTest} style={{padding:'12px 32px',borderRadius:100,border:'none',background:C.red,color:C.white,fontSize:14,fontWeight:700,cursor:'pointer'}}>End test call</button>
+              </div>
+            ):(
+              <div>
+                <div style={{fontSize:18,fontWeight:700,color:C.white,marginBottom:6}}>Test your Voice AI</div>
+                <p style={{fontSize:13,color:C.muted,marginBottom:24,lineHeight:1.6}}>Simulate an inbound call to hear how Nova greets callers, qualifies leads, and books appointments with your current settings.</p>
+                <button onClick={startTest} style={{padding:'14px 36px',borderRadius:100,border:'none',background:C.teal,color:C.white,fontSize:15,fontWeight:700,cursor:'pointer',boxShadow:'0 8px 24px rgba(15,160,160,0.3)'}}>Start test call</button>
+                <div style={{fontSize:11,color:C.muted,marginTop:12}}>Uses your browser microphone · Requires Vapi API key</div>
+              </div>
+            )}
+          </DCard>
+
+          <DCard style={{marginTop:16}}>
+            <div style={{fontSize:14,fontWeight:700,color:C.white,marginBottom:12}}>Quick test scenarios</div>
+            {[
+              {label:'New buyer inquiry',prompt:'"Hi, I\'m looking for a 3-bedroom house in Mississauga under $800K"'},
+              {label:'Listing seller call',prompt:'"I want to sell my home. What\'s it worth?"'},
+              {label:'After-hours call',prompt:'Test how Nova handles calls outside business hours'},
+              {label:'Transfer request',prompt:'"Can I speak to the agent directly?"'},
+            ].map((s,i)=>(
+              <div key={i} onClick={()=>{if(!testActive)startTest();}} style={{display:'flex',alignItems:'center',gap:12,padding:'10px 14px',borderRadius:10,border:'1px solid '+C.border,cursor:'pointer',marginBottom:6,transition:'all 0.15s'}} onMouseOver={e=>e.currentTarget.style.borderColor=C.teal} onMouseOut={e=>e.currentTarget.style.borderColor=C.border}>
+                <span style={{fontSize:14}}>▶</span>
+                <div>
+                  <div style={{fontSize:13,fontWeight:600,color:C.white}}>{s.label}</div>
+                  <div style={{fontSize:11,color:C.muted}}>{s.prompt}</div>
+                </div>
+              </div>
+            ))}
+          </DCard>
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.render(<VoiceAI/>, document.getElementById('nova-voiceai-root'));
+})();
+</script>
+
+<!-- ═══════════════════════════════════════════════════════
+     SCENE 4 — AI TOOLS (REBUILT)
+═══════════════════════════════════════════════════════ -->
+<script type="text/babel">
+(function(){
+const C={bg:'#081828',bg2:'#0C1E2E',bg3:'#0F2336',card:'rgba(255,255,255,0.03)',border:'rgba(255,255,255,0.07)',border2:'rgba(255,255,255,0.1)',teal:'#0FA0A0',gold:'#D4A843',white:'#F0F4F8',muted:'#6B8BA4',purple:'#9B7FD4',green:'#2ECC71',red:'#E74C3C',blue:'#3498DB',pink:'#E91E8C'};
+const NOVA_AVATAR=window._NOVA_AVATAR;
+
+function AITools(){
+  const [activeTool,setActiveTool]=React.useState(null);
+  const [loading,setLoading]=React.useState(false);
+  const [result,setResult]=React.useState(null);
+  const [copied,setCopied]=React.useState('');
+
+  // Listing Marketing state
+  const [lAddr,setLAddr]=React.useState('');
+  const [lPrice,setLPrice]=React.useState('');
+  const [lBeds,setLBeds]=React.useState('3');
+  const [lBaths,setLBaths]=React.useState('2');
+  const [lSqft,setLSqft]=React.useState('');
+  const [lHighlights,setLHighlights]=React.useState('');
+
+  // Generic tool state
+  const [toolInput,setToolInput]=React.useState('');
+
+  const agentName=window._sfUserName||'the agent';
+
+  async function callAI(system,userMsg){
+    setLoading(true);setResult(null);
+    try{
+      const res=await window._sfGatedFetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,system,messages:[{role:'user',content:userMsg}]})
+      });
+      const data=await res.json();
+      if(data.error){setResult({error:data.error.message||'API error'});setLoading(false);return null;}
+      const text=(data.content||[]).map(c=>c.text||'').join('');
+      setLoading(false);
+      return text;
+    }catch(e){setResult({error:'Connection error. Check your API key.'});setLoading(false);return null;}
+  }
+
+  async function launchListing(){
+    if(!lAddr.trim()||!lPrice.trim())return;
+    const text=await callAI(
+      'You are Nova, AI Growth Operator for real estate agent '+agentName+'. Generate listing marketing content. Respond with ONLY valid JSON, no markdown fences. Keys: description (150-200 word MLS description), instagram (caption with emojis+hashtags), reel (60-sec script with scene directions in brackets), youtube (click-worthy video title), email (subject line then blank line then body with CTA), ad (Facebook/Google ad headline + body with CTA).',
+      'Generate ALL 6 marketing assets for this listing.\nListing: '+lAddr.trim()+'\nBeds: '+lBeds+' | Baths: '+lBaths+' | Sqft: '+(lSqft||'N/A')+' | Price: $'+lPrice.trim()+'\nHighlights: '+(lHighlights||'None specified')+'\n\nReturn ONLY a JSON object.'
+    );
+    if(text){
+      try{const parsed=JSON.parse(text.replace(/```json\s*/g,'').replace(/```\s*/g,'').trim());setResult(parsed);}
+      catch(e){setResult({error:'Failed to parse AI response. Try again.'});}
+    }
+  }
+
+  async function runGenericTool(toolId){
+    if(!toolInput.trim())return;
+    const prompts={
+      followup:{sys:'You are Nova, AI Growth Operator. Write a personalized follow-up message for a real estate agent. Be warm, professional, and include a clear next step.',user:'Write a follow-up message for this situation: '+toolInput},
+      objection:{sys:'You are Nova, AI Growth Operator and real estate negotiation coach. Provide 3 different responses to handle this objection, from soft to firm. Format each with a label.',user:'How should I handle this objection from a client: '+toolInput},
+      market:{sys:'You are Nova, AI Growth Operator with deep real estate market knowledge. Provide a concise market brief with key stats, trends, and actionable advice.',user:'Give me a market brief for: '+toolInput},
+      social:{sys:'You are Nova, AI Growth Operator and social media expert for real estate. Generate 3 social media post ideas with captions, hashtags, and content tips.',user:'Create social media posts about: '+toolInput},
+      email:{sys:'You are Nova, AI Growth Operator. Write a professional real estate email with subject line and body. Be concise and include a CTA.',user:'Write an email for this purpose: '+toolInput},
+    };
+    const p=prompts[toolId];
+    if(!p)return;
+    const text=await callAI(p.sys,p.user);
+    if(text)setResult({text});
+  }
+
+  function copyText(text,key){navigator.clipboard?.writeText(text);setCopied(key);setTimeout(()=>setCopied(''),1800);}
+  function back(){setActiveTool(null);setResult(null);setToolInput('');setLoading(false);}
+
+  const DCard=({children,style:s={}})=><div style={{background:C.card,border:'1px solid '+C.border,borderRadius:16,padding:'20px 22px',...s}}>{children}</div>;
+
+  const TOOLS=[
+    {id:'listing',icon:'🏡',name:'Listing Marketing Engine',desc:'One click → 6 marketing assets (MLS, Instagram, Reel, YouTube, Email, Ad)',color:C.teal,star:true},
+    {id:'followup',icon:'✍️',name:'Follow-Up Writer',desc:'Personalized outreach messages in seconds',color:C.gold},
+    {id:'objection',icon:'🛡️',name:'Objection Coach',desc:'Handle any client pushback confidently',color:C.purple},
+    {id:'market',icon:'📈',name:'Market Brief',desc:'Latest trends and insights for any area',color:C.blue},
+    {id:'social',icon:'📱',name:'Social Post Generator',desc:'3 ready-to-post ideas with captions',color:C.pink},
+    {id:'email',icon:'📧',name:'Email Writer',desc:'Professional emails with subject lines',color:C.gold},
+  ];
+
+  const LISTING_ASSETS=[
+    {key:'description',label:'MLS Description',icon:'📝',color:'#0FA0A0'},
+    {key:'instagram',label:'Instagram Caption',icon:'📸',color:'#E1306C'},
+    {key:'reel',label:'Reel Script (60s)',icon:'🎬',color:'#9B7FD4'},
+    {key:'youtube',label:'YouTube Title',icon:'▶️',color:'#FF0000'},
+    {key:'email',label:'Email Blast',icon:'📧',color:'#D4A843'},
+    {key:'ad',label:'Ad Copy',icon:'📢',color:'#5B9BD5'},
+  ];
+
+  // Tool menu
+  if(!activeTool){
+    return(
+      <div style={{padding:'28px 32px',maxWidth:900,margin:'0 auto',fontFamily:"'DM Sans',sans-serif"}}>
+        <div style={{marginBottom:24}}>
+          <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:4}}>
+            <span style={{fontSize:24}}>⚡</span>
+            <h1 style={{fontSize:22,fontWeight:700,color:C.white,margin:0}}>AI Tools</h1>
+          </div>
+          <p style={{fontSize:13,color:C.muted,margin:0}}>Pick a tool and Nova gets to work. Real AI, real output.</p>
+        </div>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+          {TOOLS.map(t=>(
+            <div key={t.id} onClick={()=>setActiveTool(t.id)}
+              style={{display:'flex',alignItems:'center',gap:16,padding:'20px 22px',borderRadius:16,border:'1px solid '+(t.star?'rgba(15,160,160,0.3)':C.border),background:t.star?'rgba(15,160,160,0.06)':C.card,cursor:'pointer',transition:'all 0.15s',position:'relative'}}
+              onMouseOver={e=>{e.currentTarget.style.borderColor=t.color;e.currentTarget.style.transform='translateY(-2px)';}}
+              onMouseOut={e=>{e.currentTarget.style.borderColor=t.star?'rgba(15,160,160,0.3)':C.border;e.currentTarget.style.transform='none';}}>
+              {t.star&&<div style={{position:'absolute',top:10,right:12,fontSize:9,fontWeight:700,color:C.teal,background:'rgba(15,160,160,0.15)',padding:'2px 8px',borderRadius:100,textTransform:'uppercase',letterSpacing:'0.06em'}}>Featured</div>}
+              <div style={{width:48,height:48,borderRadius:14,background:t.color+'15',display:'flex',alignItems:'center',justifyContent:'center',fontSize:24,flexShrink:0}}>{t.icon}</div>
+              <div>
+                <div style={{fontSize:14,fontWeight:700,color:C.white}}>{t.name}</div>
+                <div style={{fontSize:12,color:C.muted,marginTop:2}}>{t.desc}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  const tool=TOOLS.find(t=>t.id===activeTool);
+
+  // Listing Marketing Engine
+  if(activeTool==='listing'){
+    return(
+      <div style={{padding:'28px 32px',maxWidth:900,margin:'0 auto',fontFamily:"'DM Sans',sans-serif"}}>
+        <button onClick={back} style={{display:'flex',alignItems:'center',gap:6,background:'none',border:'none',color:C.muted,fontSize:13,cursor:'pointer',marginBottom:20,padding:0}}>← Back to tools</button>
+        <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:24}}>
+          <div style={{width:48,height:48,borderRadius:14,background:'rgba(15,160,160,0.12)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:24}}>🏡</div>
+          <div>
+            <h2 style={{fontSize:20,fontWeight:700,color:C.white,margin:0}}>Listing Marketing Engine</h2>
+            <p style={{fontSize:13,color:C.muted,margin:0}}>Enter your listing details → Nova generates 6 marketing assets instantly</p>
+          </div>
+        </div>
+
+        {!result||result.error?(
+          <div key="listing-form" style={{background:C.card,border:'1px solid '+C.border,borderRadius:16,padding:'20px 22px'}}>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:12}}>
+              <div style={{gridColumn:'1/-1'}}>
+                <label style={{fontSize:11,color:C.muted,display:'block',marginBottom:4}}>Property address *</label>
+                <input value={lAddr} onChange={e=>setLAddr(e.target.value)} placeholder="123 Main St, Mississauga, ON"
+                  style={{width:'100%',padding:'11px 14px',borderRadius:10,border:'1px solid '+C.border2,background:C.bg2,color:C.white,fontSize:14,boxSizing:'border-box'}}/>
+              </div>
+              <div>
+                <label style={{fontSize:11,color:C.muted,display:'block',marginBottom:4}}>Asking price *</label>
+                <input value={lPrice} onChange={e=>setLPrice(e.target.value)} placeholder="650,000"
+                  style={{width:'100%',padding:'11px 14px',borderRadius:10,border:'1px solid '+C.border2,background:C.bg2,color:C.white,fontSize:14,boxSizing:'border-box'}}/>
+              </div>
+              <div>
+                <label style={{fontSize:11,color:C.muted,display:'block',marginBottom:4}}>Sqft (optional)</label>
+                <input value={lSqft} onChange={e=>setLSqft(e.target.value)} placeholder="1,800"
+                  style={{width:'100%',padding:'11px 14px',borderRadius:10,border:'1px solid '+C.border2,background:C.bg2,color:C.white,fontSize:14,boxSizing:'border-box'}}/>
+              </div>
+              <div>
+                <label style={{fontSize:11,color:C.muted,display:'block',marginBottom:4}}>Bedrooms</label>
+                <select value={lBeds} onChange={e=>setLBeds(e.target.value)} style={{width:'100%',padding:'11px 14px',borderRadius:10,border:'1px solid '+C.border2,background:C.bg2,color:C.white,fontSize:14}}>
+                  {['1','2','3','4','5','6+'].map(n=><option key={n} value={n} style={{background:C.bg}}>{n}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={{fontSize:11,color:C.muted,display:'block',marginBottom:4}}>Bathrooms</label>
+                <select value={lBaths} onChange={e=>setLBaths(e.target.value)} style={{width:'100%',padding:'11px 14px',borderRadius:10,border:'1px solid '+C.border2,background:C.bg2,color:C.white,fontSize:14}}>
+                  {['1','1.5','2','2.5','3','3.5','4+'].map(n=><option key={n} value={n} style={{background:C.bg}}>{n}</option>)}
+                </select>
+              </div>
+              <div style={{gridColumn:'1/-1'}}>
+                <label style={{fontSize:11,color:C.muted,display:'block',marginBottom:4}}>Key highlights</label>
+                <textarea value={lHighlights} onChange={e=>setLHighlights(e.target.value)} rows={3}
+                  placeholder="Renovated kitchen, hardwood floors, corner lot, near subway, finished basement..."
+                  style={{width:'100%',padding:'11px 14px',borderRadius:10,border:'1px solid '+C.border2,background:C.bg2,color:C.white,fontSize:14,resize:'vertical',fontFamily:'inherit',boxSizing:'border-box'}}/>
+              </div>
+            </div>
+            {result&&result.error&&<div style={{color:C.red,fontSize:13,marginBottom:12,padding:'10px 14px',background:'rgba(231,76,60,0.08)',borderRadius:10}}>{result.error}</div>}
+            <button onClick={()=>launchListing()} disabled={loading||!lAddr.trim()||!lPrice.trim()}
+              style={{width:'100%',padding:'14px',borderRadius:12,border:'none',background:loading?'rgba(15,160,160,0.15)':'linear-gradient(135deg,#0FA0A0,#0B7A75)',color:'#fff',fontSize:15,fontWeight:700,cursor:loading?'not-allowed':'pointer',boxShadow:loading?'none':'0 4px 20px rgba(15,160,160,0.3)',display:'flex',alignItems:'center',justifyContent:'center',gap:8}}>
+              {loading?(<><span style={{display:'inline-flex',gap:3}}>{[0,0.15,0.3].map((d,i)=><span key={i} style={{width:6,height:6,borderRadius:'50%',background:C.teal,animation:'novaPulse 1s '+d+'s ease infinite'}}/>)}</span> Nova is generating…</>):(<>🚀 Generate 6 Marketing Assets</>)}
+            </button>
+          </div>
+        ):(
+          <div>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}>
+              <div style={{display:'flex',alignItems:'center',gap:8}}>
+                <span style={{fontSize:18}}>✅</span>
+                <div>
+                  <div style={{fontSize:15,fontWeight:700,color:C.white}}>6 assets generated</div>
+                  <div style={{fontSize:12,color:C.muted}}>{lAddr}</div>
+                </div>
+              </div>
+              <button onClick={()=>{setResult(null);setLAddr('');setLPrice('');setLSqft('');setLHighlights('');}} style={{fontSize:12,color:C.teal,background:'rgba(15,160,160,0.1)',border:'1px solid rgba(15,160,160,0.25)',borderRadius:8,padding:'6px 14px',cursor:'pointer',fontWeight:600}}>+ New Listing</button>
+            </div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+              {LISTING_ASSETS.map(a=>(
+                <DCard key={a.key} style={{borderColor:a.color+'30'}}>
+                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
+                    <div style={{display:'flex',alignItems:'center',gap:8}}>
+                      <span style={{fontSize:16}}>{a.icon}</span>
+                      <span style={{fontSize:13,fontWeight:700,color:a.color}}>{a.label}</span>
+                    </div>
+                    <button onClick={()=>copyText(result[a.key]||'',a.key)} style={{fontSize:11,fontWeight:600,padding:'4px 12px',borderRadius:6,cursor:'pointer',background:copied===a.key?'rgba(15,160,160,0.2)':'rgba(255,255,255,0.05)',border:'1px solid '+(copied===a.key?'rgba(15,160,160,0.4)':'rgba(255,255,255,0.08)'),color:copied===a.key?C.teal:C.muted}}>
+                      {copied===a.key?'✓ Copied':'Copy'}
+                    </button>
+                  </div>
+                  <div style={{fontSize:13,color:'rgba(255,255,255,0.75)',lineHeight:1.7,whiteSpace:'pre-wrap',maxHeight:200,overflowY:'auto'}}>{result[a.key]||'Content unavailable.'}</div>
+                </DCard>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Generic tools (Follow-Up, Objection, Market, Social, Email)
+  return(
+    <div style={{padding:'28px 32px',maxWidth:700,margin:'0 auto',fontFamily:"'DM Sans',sans-serif"}}>
+      <button onClick={back} style={{display:'flex',alignItems:'center',gap:6,background:'none',border:'none',color:C.muted,fontSize:13,cursor:'pointer',marginBottom:20,padding:0}}>← Back to tools</button>
+      <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:24}}>
+        <div style={{width:48,height:48,borderRadius:14,background:(tool?.color||C.teal)+'15',display:'flex',alignItems:'center',justifyContent:'center',fontSize:24}}>{tool?.icon}</div>
+        <div>
+          <h2 style={{fontSize:20,fontWeight:700,color:C.white,margin:0}}>{tool?.name}</h2>
+          <p style={{fontSize:13,color:C.muted,margin:0}}>{tool?.desc}</p>
+        </div>
+      </div>
+
+      {!result?(
+        <DCard>
+          <textarea value={toolInput} onChange={e=>setToolInput(e.target.value)} rows={5}
+            placeholder={activeTool==='followup'?"Describe the situation (e.g. 'Met Sarah at open house last Sunday, she liked the kitchen but was worried about price...')":
+              activeTool==='objection'?"What objection did you hear? (e.g. 'The asking price is too high for this neighbourhood')":
+              activeTool==='market'?"Which area or topic? (e.g. 'Mississauga detached homes Q1 2026' or 'Is it a buyer or seller market in Oakville?')":
+              activeTool==='social'?"What do you want to post about? (e.g. 'Just listed a beautiful 4BR in Port Credit' or 'First-time buyer tips')":
+              "What's the email about? (e.g. 'Follow up on showing at 45 Lakeshore Rd, they seemed interested but haven't responded')"}
+            style={{width:'100%',padding:'14px',borderRadius:12,border:'1px solid '+C.border2,background:C.bg2,color:C.white,fontSize:14,resize:'vertical',fontFamily:'inherit',lineHeight:1.6,boxSizing:'border-box',marginBottom:12}}/>
+          <button onClick={()=>runGenericTool(activeTool)} disabled={loading||!toolInput.trim()}
+            style={{width:'100%',padding:'14px',borderRadius:12,border:'none',background:loading?'rgba(15,160,160,0.15)':'linear-gradient(135deg,'+(tool?.color||C.teal)+','+(tool?.color||C.teal)+'CC)',color:'#fff',fontSize:15,fontWeight:700,cursor:loading?'not-allowed':'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:8}}>
+            {loading?(<><span style={{display:'inline-flex',gap:3}}>{[0,0.15,0.3].map((d,i)=><span key={i} style={{width:6,height:6,borderRadius:'50%',background:tool?.color||C.teal,animation:'novaPulse 1s '+d+'s ease infinite'}}/>)}</span> Nova is thinking…</>):(<>✦ Generate</>)}
+          </button>
+        </DCard>
+      ):(
+        result.error?(
+          <DCard style={{textAlign:'center',padding:32}}>
+            <div style={{fontSize:28,marginBottom:10}}>⚠️</div>
+            <div style={{fontSize:13,color:C.red,marginBottom:12}}>{result.error}</div>
+            <button onClick={()=>setResult(null)} style={{padding:'8px 20px',borderRadius:8,background:'rgba(231,76,60,0.12)',border:'1px solid rgba(231,76,60,0.3)',color:C.red,fontSize:12,fontWeight:600,cursor:'pointer'}}>Try Again</button>
+          </DCard>
+        ):(
+          <DCard>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}>
+              <span style={{fontSize:14,fontWeight:700,color:C.white}}>Nova's response</span>
+              <div style={{display:'flex',gap:8}}>
+                <button onClick={()=>copyText(result.text,'all')} style={{fontSize:12,fontWeight:600,padding:'6px 14px',borderRadius:8,cursor:'pointer',background:copied==='all'?'rgba(15,160,160,0.2)':'rgba(255,255,255,0.05)',border:'1px solid '+(copied==='all'?'rgba(15,160,160,0.4)':'rgba(255,255,255,0.08)'),color:copied==='all'?C.teal:C.muted}}>
+                  {copied==='all'?'✓ Copied':'Copy all'}
+                </button>
+                <button onClick={()=>{setResult(null);setToolInput('');}} style={{fontSize:12,fontWeight:600,padding:'6px 14px',borderRadius:8,cursor:'pointer',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.08)',color:C.muted}}>New</button>
+              </div>
+            </div>
+            <div style={{fontSize:14,color:'rgba(255,255,255,0.85)',lineHeight:1.8,whiteSpace:'pre-wrap'}}>{result.text}</div>
+          </DCard>
+        )
+      )}
+    </div>
+  );
+}
+
+ReactDOM.render(<AITools/>, document.getElementById('nova-tools-root'));
+})();
+</script>
 <script>
 // Set Today tab footer Nova image after Babel scripts have defined window._NOVA_AVATAR
 (function poll(){
@@ -21679,41 +22586,124 @@ window.addEventListener('popstate', function(){
 <div id="sf-credit-counter" style="position:fixed;top:14px;right:280px;z-index:9998;display:none;"></div>
 
 <script>
-// Pricing row highlight on hover
+// Pricing: hover highlights row, click shows comparison popover
 (function(){
   var grid = document.querySelector('.pricing-grid');
   if(!grid) return;
-  var cards = grid.querySelectorAll('.pricing-card');
+  var cards = Array.from(grid.querySelectorAll('.pricing-card'));
   if(cards.length < 2) return;
 
-  // Collect all feature lists
-  var allLists = [];
-  cards.forEach(function(card){
-    var items = card.querySelectorAll('.pricing-features li');
-    allLists.push(items);
+  var planNames = cards.map(function(c){
+    var n = c.querySelector('.pricing-name');
+    return n ? n.textContent.trim() : '';
+  });
+  var planColors = ['#6B8BA4','#D4A843','#0FA0A0','#9B7FD4'];
+
+  var allLists = cards.map(function(c){
+    return Array.from(c.querySelectorAll('.pricing-features li'));
   });
 
-  // Add hover listeners to each li
+  // Inject compare hint into each card (between divider and feature list)
+  cards.forEach(function(card){
+    var divider = card.querySelector('.pricing-divider');
+    if(!divider) return;
+    var hint = document.createElement('div');
+    hint.className = 'pricing-compare-hint';
+    hint.style.cssText = 'display:flex;align-items:center;gap:6px;padding:8px 12px;margin:8px 0 4px;background:rgba(15,160,160,0.06);border:1px dashed rgba(15,160,160,0.25);border-radius:8px;font-size:0.68rem;color:rgba(15,160,160,0.8);cursor:default;';
+    hint.innerHTML = '💡 <span>Click any feature to compare across plans · or hover & scroll to compare</span>';
+    divider.parentNode.insertBefore(hint, divider.nextSibling);
+  });
+
+  // Create popover
+  var popover = document.createElement('div');
+  popover.id = 'pricing-compare-pop';
+  popover.style.cssText = 'position:absolute;z-index:100;background:#0D1F35;border:1px solid rgba(15,160,160,0.3);border-radius:12px;padding:14px 16px;opacity:0;pointer-events:none;transition:opacity 0.15s;box-shadow:0 12px 40px rgba(0,0,0,0.5);max-width:360px;font-family:DM Sans,sans-serif;';
+  document.body.appendChild(popover);
+
+  var activeLi = null;
+
+  function showPop(li, cardIdx, rowIdx){
+    if(activeLi === li){ hidePop(); return; }
+    activeLi = li;
+    // Build comparison showing ALL plans
+    var featureName = li.textContent.replace(/[✓✗]/g,'').trim();
+    var html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">';
+    html += '<div style="font-size:11px;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.1em;font-weight:700;">Compare Plans</div>';
+    html += '<div style="font-size:9px;color:rgba(255,255,255,0.3);cursor:pointer;" onclick="document.getElementById(\'pricing-compare-pop\').style.opacity=0;document.getElementById(\'pricing-compare-pop\').style.pointerEvents=\'none\';">✕ Close</div>';
+    html += '</div>';
+    html += '<div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.08);">'+featureName+'</div>';
+    for(var i=0; i<cards.length; i++){
+      var otherLi = allLists[i][rowIdx];
+      if(!otherLi) continue;
+      if(otherLi.classList.contains('feat-section')) continue;
+      var isDisabled = otherLi.classList.contains('disabled');
+      var text = otherLi.textContent.replace(/[✓✗]/g,'').trim();
+      var icon = isDisabled ? '<span style="color:#c0392b;">✗</span>' : '<span style="color:#0FA0A0;">✓</span>';
+      var isCurrent = (i === cardIdx);
+      var bg = isCurrent ? 'rgba(15,160,160,0.1)' : 'transparent';
+      var border = isCurrent ? '1px solid rgba(15,160,160,0.2)' : '1px solid transparent';
+      html += '<div style="display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:8px;background:'+bg+';border:'+border+';margin-bottom:3px;">';
+      html += '<div style="font-size:11px;font-weight:700;color:'+planColors[i]+';min-width:70px;">'+planNames[i]+(isCurrent?' <span style=font-size:8px;opacity:0.5>◄</span>':'')+'</div>';
+      html += '<div style="font-size:11px;color:'+(isDisabled?'rgba(255,255,255,0.3)':'rgba(255,255,255,0.85)')+';display:flex;align-items:center;gap:5px;">'+icon+' '+text+'</div>';
+      html += '</div>';
+    }
+    popover.innerHTML = html;
+    popover.style.opacity = '1';
+    popover.style.pointerEvents = 'auto';
+
+    // Position to the right of the card
+    var rect = li.getBoundingClientRect();
+    var cardRect = li.closest('.pricing-card').getBoundingClientRect();
+    var pw = 360;
+    var left = cardRect.right + 12;
+    if(left + pw > window.innerWidth) left = cardRect.left - pw - 12;
+    if(left < 8) left = rect.left + 20;
+    popover.style.left = (left + window.scrollX) + 'px';
+    popover.style.top = (rect.top + window.scrollY - 20) + 'px';
+  }
+
+  function hidePop(){
+    activeLi = null;
+    popover.style.opacity = '0';
+    popover.style.pointerEvents = 'none';
+  }
+
+  // Close popover when clicking outside
+  document.addEventListener('click', function(e){
+    if(!popover.contains(e.target) && activeLi && !activeLi.contains(e.target)){
+      hidePop();
+    }
+  });
+
+  // Attach listeners
   allLists.forEach(function(items, cardIdx){
     items.forEach(function(li, rowIdx){
+      if(li.classList.contains('feat-section')) return;
+      li.style.cursor = 'pointer';
+      li.style.transition = 'background 0.15s';
+
+      // Hover: highlight same row across all cards
       li.addEventListener('mouseenter', function(){
-        // Highlight this row in ALL cards
         allLists.forEach(function(otherItems){
           if(otherItems[rowIdx]){
             otherItems[rowIdx].style.background = 'rgba(15,160,160,0.08)';
             otherItems[rowIdx].style.borderRadius = '6px';
-            otherItems[rowIdx].style.transition = 'background 0.15s';
           }
         });
       });
       li.addEventListener('mouseleave', function(){
-        // Remove highlight from ALL cards
         allLists.forEach(function(otherItems){
           if(otherItems[rowIdx]){
             otherItems[rowIdx].style.background = '';
             otherItems[rowIdx].style.borderRadius = '';
           }
         });
+      });
+
+      // Click: show comparison popover
+      li.addEventListener('click', function(e){
+        e.stopPropagation();
+        showPop(li, cardIdx, rowIdx);
       });
     });
   });
