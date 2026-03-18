@@ -1798,51 +1798,276 @@ footer {
 }
 
 /* ═══════════════════════════════════════════════════════
-   MOBILE RESPONSIVE — Bottom Nav + Stacked Layouts
+   ✦ MOBILE RESPONSIVE — Premium Gen-Z Experience ✦
+   Glass morphism · Gradient accents · Buttery animations
    ═══════════════════════════════════════════════════════ */
+
+/* ── Mobile Scroll-Reveal Animations ── */
+@keyframes mobileSlideUp {
+  from { opacity: 0; transform: translateY(36px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes mobileFadeScale {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes shimmerGlow {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+@keyframes gentleBounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+@keyframes pulseRing {
+  0%   { box-shadow: 0 0 0 0 rgba(15,160,160,0.45); }
+  70%  { box-shadow: 0 0 0 18px rgba(15,160,160,0); }
+  100% { box-shadow: 0 0 0 0 rgba(15,160,160,0); }
+}
 
 /* ── MOBILE BOTTOM NAV ── */
 
 @media (max-width: 900px) {
-  .hero-content { grid-template-columns: 1fr !important; gap: 12px; padding: 16px 16px 8px; }
-  .hero { min-height: auto !important; overflow: hidden !important; padding-bottom: 0 !important; padding-top: 56px !important; display: block !important; height: auto !important; }
-  .hero-bg, .hero-grid { position: absolute; inset: 0; pointer-events: none; }
-  .hero-text h1 { font-size: 1.8rem !important; margin-bottom: 4px !important; }
-  .hero-sub { font-size: 0.82rem !important; margin-bottom: 10px !important; }
-  .hero-badge { font-size: 0.58rem !important; padding: 5px 10px !important; margin-bottom: 12px !important; }
-  /* Buttons side by side */
-  .hero-actions { flex-wrap: nowrap !important; gap: 8px !important; }
-  .hero-actions .btn-primary { padding: 10px 18px !important; font-size: 0.82rem !important; white-space: nowrap; }
-  .hero-actions .btn-ghost  { padding: 10px 14px !important; font-size: 0.82rem !important; white-space: nowrap; }
-  /* Stats all in one row */
-  .hero-stats { margin-top: 12px !important; gap: 12px !important; flex-wrap: nowrap !important; justify-content: space-between; }
-  .hero-stat .num { font-size: 1.4rem !important; }
-  .hero-stat .label { font-size: 0.55rem !important; }
-  /* Nova hero: smaller so visible above fold */
-  .hero-visual.nova-hero-visual { display: flex !important; min-height: auto !important; padding-bottom: 0 !important; margin-bottom: 0 !important; }
-  .nova-figure-img { height: 220px !important; }
-  .nova-glow-ring { width: 140px !important; height: 140px !important; bottom: 30px !important; }
-  .nova-namecard { padding: 6px 12px !important; }
-  .nova-namecard-name { font-size: 0.8rem !important; }
-  .nova-namecard-role { font-size: 0.6rem !important; }
+
+  /* ━━ HERO — Full-screen impact ━━ */
+  .hero {
+    min-height: 100dvh !important;
+    overflow: hidden !important;
+    padding-bottom: 0 !important;
+    padding-top: 52px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    position: relative;
+  }
+  .hero-bg {
+    position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 320px 320px at 50% 30%, rgba(15,160,160,0.22) 0%, transparent 70%),
+      radial-gradient(ellipse 200px 200px at 20% 80%, rgba(212,168,67,0.14) 0%, transparent 60%),
+      radial-gradient(ellipse 180px 180px at 85% 70%, rgba(15,160,160,0.10) 0%, transparent 60%) !important;
+  }
+  .hero-grid {
+    position: absolute; inset: 0; pointer-events: none;
+    background-size: 40px 40px !important;
+    opacity: 0.6;
+  }
+  .hero-content {
+    grid-template-columns: 1fr !important;
+    gap: 20px;
+    padding: 24px 20px 16px !important;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* ━━ Hero Badge — Glassmorphism pill ━━ */
+  .hero-badge {
+    font-size: 0.65rem !important;
+    padding: 7px 16px !important;
+    margin-bottom: 16px !important;
+    background: rgba(212,168,67,0.12) !important;
+    border: 1px solid rgba(212,168,67,0.25) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    animation: mobileFadeScale 0.6s ease both, pulseRing 3s ease infinite 1.5s !important;
+    justify-content: center;
+  }
+
+  /* ━━ Hero Headline — Bold gradient text ━━ */
+  .hero-text { text-align: center; }
+  .hero-text h1 {
+    font-size: 2.2rem !important;
+    margin-bottom: 8px !important;
+    line-height: 1.08 !important;
+    letter-spacing: -0.02em;
+    animation: mobileSlideUp 0.7s ease both 0.15s !important;
+  }
+  .hero h1 em {
+    display: block;
+    font-size: 2.4rem !important;
+  }
+
+  /* ━━ Hero Subtitle ━━ */
+  .hero-sub {
+    font-size: 0.88rem !important;
+    margin: 16px auto 24px !important;
+    max-width: 340px;
+    line-height: 1.65 !important;
+    color: rgba(255,255,255,0.55) !important;
+    animation: mobileSlideUp 0.7s ease both 0.3s !important;
+    text-align: center;
+  }
+
+  /* ━━ Hero CTA Buttons — Large, tactile ━━ */
+  .hero-actions {
+    flex-direction: column !important;
+    gap: 12px !important;
+    align-items: center;
+    animation: mobileSlideUp 0.7s ease both 0.45s !important;
+  }
+  .hero-actions .btn-primary {
+    padding: 15px 36px !important;
+    font-size: 1rem !important;
+    white-space: nowrap;
+    width: 100%;
+    max-width: 300px;
+    justify-content: center;
+    border-radius: 100px !important;
+    box-shadow: 0 8px 32px rgba(212,168,67,0.35) !important;
+    transition: all 0.25s ease !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.02em;
+  }
+  .hero-actions .btn-primary:active {
+    transform: scale(0.97) !important;
+    box-shadow: 0 4px 16px rgba(212,168,67,0.25) !important;
+  }
+  .hero-actions .btn-ghost {
+    padding: 13px 28px !important;
+    font-size: 0.9rem !important;
+    white-space: nowrap;
+    width: 100%;
+    max-width: 300px;
+    justify-content: center;
+    border-radius: 100px !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+    background: rgba(255,255,255,0.04) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: all 0.25s ease !important;
+  }
+  .hero-actions .btn-ghost:active {
+    background: rgba(255,255,255,0.08) !important;
+    border-color: rgba(255,255,255,0.3) !important;
+  }
+
+  /* ━━ Hero Stats — Glass cards row ━━ */
+  .hero-stats {
+    margin-top: 24px !important;
+    gap: 8px !important;
+    flex-wrap: nowrap !important;
+    justify-content: center;
+    animation: mobileSlideUp 0.7s ease both 0.6s !important;
+  }
+  .hero-stat {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 12px 14px !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    text-align: center;
+    flex: 1;
+    min-width: 0;
+    transition: border-color 0.3s ease;
+  }
+  .hero-stat .num {
+    font-size: 1.5rem !important;
+  }
+  .hero-stat .num span {
+    font-size: 0.7em;
+  }
+  .hero-stat .label {
+    font-size: 0.58rem !important;
+    letter-spacing: 0.06em;
+    margin-top: 4px !important;
+    color: rgba(255,255,255,0.45);
+  }
+
+  /* ━━ Nova Hero Visual — Centered, larger, dramatic ━━ */
+  .hero-visual.nova-hero-visual {
+    display: flex !important;
+    min-height: auto !important;
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+    justify-content: center;
+    animation: mobileFadeScale 0.8s ease both 0.5s !important;
+    position: relative;
+  }
+  .nova-figure-img {
+    height: 260px !important;
+    filter: drop-shadow(0 0 40px rgba(15,160,160,0.25));
+    animation: gentleBounce 4s ease-in-out infinite !important;
+  }
+  .nova-glow-ring {
+    width: 160px !important;
+    height: 160px !important;
+    bottom: 20px !important;
+    animation: pulseRing 3s ease infinite !important;
+  }
+  .nova-namecard {
+    padding: 8px 16px !important;
+    background: rgba(13,31,53,0.85) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(15,160,160,0.25) !important;
+    border-radius: 12px !important;
+  }
+  .nova-namecard-name { font-size: 0.85rem !important; }
+  .nova-namecard-role { font-size: 0.65rem !important; }
   /* Hide floating badges on mobile — they overlap */
   .nova-badge { display: none !important; }
+
+  /* ━━ Social Proof Bar — Sticky feel ━━ */
+  .ticker-section {
+    position: relative;
+    z-index: 5;
+  }
+  .trust-bar {
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 8px 16px !important;
+    padding: 14px 16px !important;
+    background: rgba(15,160,160,0.06) !important;
+    border-top: 1px solid rgba(15,160,160,0.12);
+    border-bottom: 1px solid rgba(15,160,160,0.12);
+  }
+  .trust-label {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+
+  /* ━━ Problems Section — Card-based mobile layout ━━ */
+  .problems { padding: 56px 0 !important; }
   .problems-grid { grid-template-columns: 1fr; gap: 0; }
-  .problems { padding: 60px 0 !important; }
-  .problem-card { padding: 32px 0; border-left: none; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .problem-card {
+    padding: 28px 0;
+    border-left: none;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
   .problem-card:first-child { padding-top: 0; }
   .problem-card:last-child { border-bottom: none; padding-bottom: 0; }
-  .problem-num { font-size: 3rem; }
-  .testimonials-split { grid-template-columns: 1fr; gap: 40px; }
-  .new-agent-split { grid-template-columns: 1fr; gap: 40px; }
-  .new-agent-section { padding: 60px 0; }
-  .new-agent-left h2 { font-size: 2rem; }
-  .testimonials { padding: 60px 0 !important; }
-  .testimonials-left h2 { font-size: 2rem; }
-  .pricing { padding: 40px 0 !important; }
-  .pricing-header { margin-bottom: 24px !important; }
-  .feature-panel { grid-template-columns: 1fr; }
-  .feature-visual { min-height: 280px; }
+  .problem-num { font-size: 0.65rem !important; }
+  .problem-card h3 { font-size: 1.15rem !important; line-height: 1.3 !important; }
+  .problem-card p { font-size: 0.82rem !important; line-height: 1.65 !important; }
+
+  /* ━━ Features Section — Swipeable tabs ━━ */
+  .feature-panel { grid-template-columns: 1fr; gap: 20px; }
+  .feature-visual { min-height: 260px; border-radius: 16px; }
+
+  /* ━━ Testimonials / New Agent ━━ */
+  .testimonials-split { grid-template-columns: 1fr; gap: 32px; }
+  .new-agent-split { grid-template-columns: 1fr; gap: 32px; }
+  .new-agent-section { padding: 56px 0; }
+  .new-agent-left h2 { font-size: 1.85rem; line-height: 1.15; }
+  .testimonials { padding: 56px 0 !important; }
+  .testimonials-left h2 { font-size: 1.85rem; line-height: 1.15; }
+
+  /* ━━ Section Labels / Headings — Gradient accent ━━ */
+  .section-label {
+    font-size: 0.7rem !important;
+    letter-spacing: 0.14em !important;
+  }
+  section h2 {
+    font-size: 1.9rem !important;
+    line-height: 1.12 !important;
+    letter-spacing: -0.01em;
+  }
+
+  /* ━━ Pricing — Horizontal scroll cards ━━ */
+  .pricing { padding: 48px 0 !important; }
+  .pricing-header { margin-bottom: 20px !important; }
   .pricing-grid {
     display: flex !important;
     overflow-x: auto !important;
@@ -1850,12 +2075,13 @@ footer {
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     gap: 16px;
-    padding: 0 16px 16px;
-    margin-left: -16px;
-    margin-right: -16px;
+    padding: 0 20px 16px;
+    margin-left: -20px;
+    margin-right: -20px;
     clip-path: inset(-20px -0px -0px -0px);
+    scrollbar-width: none;
   }
-  /* Move badges inside card on mobile so they don't get clipped */
+  .pricing-grid::-webkit-scrollbar { display: none; }
   .featured-badge, .best-value-badge {
     position: relative !important;
     top: auto !important;
@@ -1864,58 +2090,119 @@ footer {
     display: block !important;
     margin: 0 auto 12px !important;
     text-align: center !important;
-    font-size: 0.78rem !important;
-    padding: 8px 24px !important;
+    font-size: 0.75rem !important;
+    padding: 8px 20px !important;
     width: fit-content !important;
+    border-radius: 100px !important;
   }
   .pricing-card {
-    min-width: calc(100vw - 64px) !important;
-    max-width: calc(100vw - 64px) !important;
+    min-width: calc(100vw - 56px) !important;
+    max-width: calc(100vw - 56px) !important;
     flex-shrink: 0 !important;
     scroll-snap-align: center;
+    border-radius: 20px !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
   }
-  .pricing-card.featured { transform: none; }
-  .pricing-card.featured { transform: none; }
+  .pricing-card.featured {
+    transform: none;
+    border-color: rgba(15,160,160,0.3) !important;
+    box-shadow: 0 0 40px rgba(15,160,160,0.08) !important;
+  }
   #addon-calc > div:last-of-type { grid-template-columns: 1fr !important; }
   #addon-list { grid-template-columns: 1fr !important; }
   #addon-total-panel { position: static !important; }
-  .growth-grid { grid-template-columns: 1fr; }
+
+  /* ━━ Grids ━━ */
+  .growth-grid { grid-template-columns: 1fr; gap: 16px; }
   .brands-grid { grid-template-columns: 1fr; }
-  .metrics-grid { grid-template-columns: 1fr 1fr; }
-  .footer-grid { grid-template-columns: 1fr 1fr; }
-  /* Hamburger nav */
+  .metrics-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 24px; }
+
+  /* ━━ Hamburger Nav — Frosted glass fullscreen ━━ */
   .nav-links {
     display: none;
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(8,24,40,0.98);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: rgba(8,24,40,0.96);
+    backdrop-filter: blur(24px) saturate(1.8);
+    -webkit-backdrop-filter: blur(24px) saturate(1.8);
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    gap: 20px;
+    justify-content: center;
+    gap: 8px;
     z-index: 10000;
-    padding: 100px 20px 40px;
+    padding: 80px 20px 40px;
     margin: 0;
     overflow-y: auto;
   }
   .nav-links.open { display: flex !important; }
-  .nav-links li { list-style: none; width: 100%; text-align: center; display: block !important; }
+  .nav-links li {
+    list-style: none;
+    width: 100%;
+    text-align: center;
+    display: block !important;
+  }
   .nav-links li a,
-  .nav-links li button { font-size: 1.3rem !important; color: rgba(255,255,255,0.9) !important; display: inline-block !important; padding: 12px 16px !important; background: none !important; border: none !important; }
-  .nav-links a { font-size: 1.2rem; }
-  .nav-links .nav-cta { padding: 14px 36px; font-size: 1rem !important; }
+  .nav-links li button {
+    font-size: 1.4rem !important;
+    color: rgba(255,255,255,0.85) !important;
+    display: inline-block !important;
+    padding: 16px 20px !important;
+    background: none !important;
+    border: none !important;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    letter-spacing: 0.01em;
+  }
+  .nav-links li a:active,
+  .nav-links li button:active {
+    color: var(--gold) !important;
+  }
+  .nav-links .nav-cta {
+    padding: 16px 44px !important;
+    font-size: 1.05rem !important;
+    background: var(--gold) !important;
+    color: var(--navy) !important;
+    border-radius: 100px !important;
+    font-weight: 700 !important;
+    margin-top: 12px;
+  }
   .nav-hamburger { display: flex !important; }
-  /* Switch grid — single column on mobile */
-  .switch-grid { grid-template-columns: 1fr; gap: 0; margin-top: 40px; }
-  .switch-card { padding: 32px 0; border-right: none; }
-  .switch-card:nth-child(1) { border-top: none; }
+
+  /* ━━ Switch Section ━━ */
+  .switch-grid { grid-template-columns: 1fr; gap: 0; margin-top: 36px; }
+  .switch-card {
+    padding: 28px 0;
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .switch-card:first-child { border-top: none; }
   .switch-card:nth-child(2) { border-top: 1px solid rgba(255,255,255,0.06); }
-  .switch-num { font-size: 3rem; }
+  .switch-num { font-size: 0.65rem; }
   .switch-icon { font-size: 1.6rem; margin-bottom: 12px; }
   .switch-card h3 { font-size: 1rem; }
-  .switch-card p { font-size: 0.82rem; }
+  .switch-card p { font-size: 0.85rem; line-height: 1.6; }
+
+  /* ━━ Container padding mobile ━━ */
+  .container { padding-left: 20px !important; padding-right: 20px !important; }
+
+  /* ━━ Global mobile polish ━━ */
+  * { -webkit-tap-highlight-color: transparent; }
+  body { -webkit-font-smoothing: antialiased; }
+
+  /* ━━ Scroll-triggered reveal classes ━━ */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.6s cubic-bezier(0.22,1,0.36,1), transform 0.6s cubic-bezier(0.22,1,0.36,1);
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-delay-1 { transition-delay: 0.12s; }
+  .reveal-delay-2 { transition-delay: 0.24s; }
+  .reveal-delay-3 { transition-delay: 0.36s; }
 }
 @media (max-width: 768px) {
   .features-tabs { gap: 6px; }
@@ -25166,6 +25453,44 @@ document.addEventListener('keydown', function(e){
 });
 </script>
 
+<!-- ✦ Mobile Scroll-Reveal & Polish ✦ -->
+<script>
+(function() {
+  // Scroll-reveal: animate .reveal elements when they enter viewport
+  if ('IntersectionObserver' in window) {
+    const revealEls = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(function(el) { observer.observe(el); });
+  }
 
-</body>
+  // Smooth scroll for all anchor links on mobile
+  document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+    a.addEventListener('click', function(e) {
+      var href = this.getAttribute('href');
+      if (!href || href === '#') return;
+      var target = document.querySelector(href);
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // Add haptic-feel active state to CTA buttons on mobile
+  if (window.matchMedia('(max-width: 900px)').matches) {
+    document.querySelectorAll('.btn-primary, .btn-ghost').forEach(function(btn) {
+      btn.addEventListener('touchstart', function() {
+        this.style.transition = 'transform 0.1s ease';
+      }, { passive: true });
+    });
+  }
+})();
+</script>
 </html>
