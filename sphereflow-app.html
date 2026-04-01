@@ -6524,28 +6524,29 @@ window._sfMasterApiKey = null;
 
 // Fetch master key from Supabase (stored in a config row)
 window._sfFetchMasterKey = async function(){
-  if(!window._sb) return;
+  if(!window._sb){ console.warn('[Nova] No Supabase client — cannot fetch AI key'); return; }
+  // Try app_config table first (may not exist — that's OK)
   try {
-    // Try app_config table first
     var res = await window._sb.from('app_config').select('value').eq('key', 'master_api_key').limit(1);
-    if(res.data && res.data.length > 0 && res.data[0].value){
+    if(!res.error && res.data && res.data.length > 0 && res.data[0].value){
       window._sfMasterApiKey = res.data[0].value;
       console.log('[Nova] AI engine loaded');
       return;
     }
   } catch(e){}
-  // Fallback: try reading from the user's own profile onboarding_data
+  // Fallback: read from the user's profile onboarding_data
   try {
     if(window._sfSupabaseUser){
       var res2 = await window._sb.from('profiles').select('onboarding_data').eq('id', window._sfSupabaseUser.id).limit(1);
+      if(res2.error) console.warn('[Nova] profiles query error:', res2.error.message);
       if(res2.data && res2.data[0] && res2.data[0].onboarding_data && res2.data[0].onboarding_data._masterKey){
         window._sfMasterApiKey = res2.data[0].onboarding_data._masterKey;
-        console.log('[Nova] AI engine loaded (profile)');
+        console.log('[Nova] AI engine loaded');
         return;
       }
     }
-  } catch(e2){}
-  console.warn('[Nova] AI key not found — run seed function');
+  } catch(e2){ console.warn('[Nova] profile fetch error:', e2.message); }
+  console.warn('[Nova] No AI key found. Run: _sfSeedMasterKey("sk-ant-...")');
 };
 
 // One-time seed: call this from console to store your key in Supabase
@@ -6615,9 +6616,22 @@ window._sfIsNovaActivated = function(){
 // Get the actual API key to use for calls (always the master key if activated)
 window._sfGetApiKey = function(){
   if(window._sfIsNovaActivated()){
-    return window._sfMasterApiKey;
+    if(window._sfMasterApiKey) return window._sfMasterApiKey;
+    // Master key not loaded — trigger async fetch for next call
+    console.warn('[Nova] Activated but master key not loaded — triggering fetch');
+    if(window._sfFetchMasterKey) window._sfFetchMasterKey();
+    return null;
   }
   return null;
+};
+
+// Async version — waits for master key fetch if needed (use in async functions)
+window._sfGetApiKeyAsync = async function(){
+  if(!window._sfIsNovaActivated || !window._sfIsNovaActivated()) return null;
+  if(window._sfMasterApiKey) return window._sfMasterApiKey;
+  // Key not loaded — fetch and wait
+  if(window._sfFetchMasterKey) await window._sfFetchMasterKey();
+  return window._sfMasterApiKey || null;
 };
 
 window.sfIsNewUser = function(){ return window._sfUserMode === 'fresh'; };
@@ -9695,40 +9709,60 @@ function AppFooter(){
 
 /* ── MAIN CRM ───────────────────────────────────────── */
 function SphereCRM(){
-  const [contacts,setContacts]=useState(()=>{
-    if(window.sfIsNewUser && window.sfIsNewUser()){
-      const ob=window._sfOnboardingData||{};
-      if(ob.contacts && ob.contacts.length>0){
-        return ob.contacts.map((name,i)=>{
-          const parts=name.trim().split(' ');
-          const firstName=parts[0]||'';
-          const lastName=parts.slice(1).join(' ')||'';
-          const avatar=parts.map(p=>p[0]).join('').toUpperCase().substring(0,2);
-          return {id:100+i,firstName,lastName,avatar,avatarColor:'#0FA0A0',
-            tags:['Sphere'], sphereScore:50,
-            lastContact:'Today', nextAction:'Set up a follow-up plan',
-            email:'', phone:'',
-            birthday:null, purchaseDate:null, mortgageRenewal:null,
-            source:'Onboarding', spouse:null, children:null,
-            notes:'', property:null,
-            interactions:[],
-            accentColor:'#0FA0A0'};
-        });
-      }
-      return [];
-    }
-    return INIT_CONTACTS;
-  });
-  // Load contacts from Supabase on mount
+  const [contacts,setContacts]=useState([]);
+  const [contactsLoading,setContactsLoading]=useState(true);
+  // Load contacts — Supabase is the ONLY source of truth for logged-in users
   useEffect(()=>{
-    if(window._sfSupabaseUser){
-      window.sfLoadData('contacts').then(d=>{if(d)setContacts(d);});
+    async function loadContacts(){
+      if(window._sfSupabaseUser){
+        try {
+          const d = await window.sfLoadData('contacts');
+          if(d && Array.isArray(d) && d.length > 0){
+            setContacts(d);
+          } else if(window.sfIsNewUser && window.sfIsNewUser()){
+            // Brand new user — check onboarding contacts
+            const ob=window._sfOnboardingData||{};
+            if(ob.contacts && ob.contacts.length>0){
+              const seeded = ob.contacts.map((name,i)=>{
+                const parts=name.trim().split(' ');
+                const firstName=parts[0]||'';
+                const lastName=parts.slice(1).join(' ')||'';
+                const avatar=parts.map(p=>p[0]).join('').toUpperCase().substring(0,2);
+                return {id:100+i,firstName,lastName,avatar,avatarColor:'#0FA0A0',
+                  tags:['Sphere'], sphereScore:50,
+                  lastContact:'Today', nextAction:'Set up a follow-up plan',
+                  email:'', phone:'',
+                  birthday:null, purchaseDate:null, mortgageRenewal:null,
+                  source:'Onboarding', spouse:null, children:null,
+                  notes:'', property:null,
+                  interactions:[],
+                  accentColor:'#0FA0A0'};
+              });
+              setContacts(seeded);
+            } else {
+              setContacts([]);
+            }
+          } else {
+            // Existing user but no contacts in Supabase — empty state, do NOT show demo data
+            setContacts([]);
+          }
+        } catch(err) {
+          console.error('[CRM] Failed to load contacts from Supabase:', err);
+          if(window._sfShowToast) window._sfShowToast('Could not load contacts. Check your connection.', 'error');
+          setContacts([]);
+        }
+      } else {
+        // Not logged in — show demo data for preview purposes only
+        setContacts(INIT_CONTACTS);
+      }
+      setContactsLoading(false);
     }
+    loadContacts();
+
     // Listen for cross-module contact sync (e.g. from Pipeline adding a deal)
     function handleSyncContact(e){
       if(e.detail){
         setContacts(prev=>{
-          // Don't add duplicate by name
           var name=((e.detail.firstName||'')+' '+(e.detail.lastName||'')).trim().toLowerCase();
           var exists=prev.some(function(c){return ((c.firstName||'')+' '+(c.lastName||'')).trim().toLowerCase()===name;});
           if(exists) return prev;
@@ -9753,11 +9787,14 @@ function SphereCRM(){
       delete window.sfAddContact;
     };
   },[]);
-  // Persist contacts to Supabase on every change
+  // Persist contacts to Supabase on every change (skip initial empty state)
   const contactsSaveTimer=useRef(null);
+  const contactsInitialLoad=useRef(true);
   useEffect(()=>{
     // Publish to global data bus so other modules can read contacts
     window.sfSetData('contacts', contacts);
+    // Don't save the initial empty array back to Supabase — wait until real data loads
+    if(contactsInitialLoad.current){ contactsInitialLoad.current = false; return; }
     if(window._sfSupabaseUser){
       clearTimeout(contactsSaveTimer.current);
       contactsSaveTimer.current=setTimeout(()=>{window.sfSaveData('contacts',contacts);},1000);
@@ -23807,24 +23844,24 @@ const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov',
 // Revenue data (monthly)
 // ═══ LIVE ANALYTICS DATA — pulled from actual CRM ═══
 function buildAnalyticsData(){
-  // Get live contacts from in-memory data bus (always current), fallback to localStorage
+  // Get live contacts from in-memory data bus (always current) — Supabase is source of truth
   var contacts = [];
-  try { contacts = (window.sfGetData && window.sfGetData('contacts')) || JSON.parse(localStorage.getItem('sf_contacts') || '[]'); } catch(e){}
+  try { contacts = (window.sfGetData && window.sfGetData('contacts')) || []; } catch(e){}
   if(!Array.isArray(contacts)) contacts = [];
 
   // Get live pipeline/deals
   var deals = [];
-  try { deals = (window.sfGetData && window.sfGetData('pipeline')) || JSON.parse(localStorage.getItem('sf_pipeline') || '[]'); } catch(e){}
+  try { deals = (window.sfGetData && window.sfGetData('pipeline')) || []; } catch(e){}
   if(!Array.isArray(deals)) deals = [];
 
   // Get live transactions
   var transactions = [];
-  try { transactions = (window.sfGetData && window.sfGetData('transactions')) || JSON.parse(localStorage.getItem('sf_transactions') || '[]'); } catch(e){}
+  try { transactions = (window.sfGetData && window.sfGetData('transactions')) || []; } catch(e){}
   if(!Array.isArray(transactions)) transactions = [];
 
   // Get scheduler/showings
   var scheduler = [];
-  try { scheduler = (window.sfGetData && window.sfGetData('scheduler')) || JSON.parse(localStorage.getItem('sf_scheduler') || '[]'); } catch(e){}
+  try { scheduler = (window.sfGetData && window.sfGetData('scheduler')) || []; } catch(e){}
   if(!Array.isArray(scheduler)) scheduler = [];
 
   // ── Revenue data by month (from transactions + deals) ──
@@ -26199,6 +26236,7 @@ function Supernova(){
   const [voiceSpeaking, setVoiceSpeaking] = React.useState(false);
   const [voiceSupported, setVoiceSupported] = React.useState(false);
   const [voiceAutoSpeak, setVoiceAutoSpeak] = React.useState(true);
+  const [voiceMicDenied, setVoiceMicDenied] = React.useState(false);
   const recognitionRef = React.useRef(null);
   const synthRef = React.useRef(null);
 
@@ -26235,8 +26273,12 @@ function Supernova(){
       recog.onerror = (event)=>{
         console.warn('[Voice] Recognition error:', event.error);
         setVoiceListening(false);
-        if(event.error === 'not-allowed'){
-          if(window._sfShowToast) window._sfShowToast('Microphone access denied. Check browser permissions.', 'warning');
+        if(event.error === 'not-allowed' || event.error === 'service-not-allowed'){
+          setVoiceMicDenied(true);
+        } else if(event.error === 'no-speech'){
+          if(window._sfShowToast) window._sfShowToast('No speech detected. Try again.', 'warning');
+        } else if(event.error === 'network'){
+          if(window._sfShowToast) window._sfShowToast('Network error — speech recognition requires internet.', 'warning');
         }
       };
 
@@ -26436,6 +26478,141 @@ function Supernova(){
         onClick: stopVoice,
         style: {background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 8, padding: '4px 12px', color: '#ef4444', fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Sans',sans-serif"}
       }, 'Stop')
+    );
+  }
+
+  // Microphone Permission Help Modal
+  function MicPermissionModal(){
+    if(!voiceMicDenied) return null;
+    const isChrome = /chrome|chromium|crios/i.test(navigator.userAgent) && !/edg/i.test(navigator.userAgent);
+    const isEdge = /edg/i.test(navigator.userAgent);
+    const isSafari = /safari/i.test(navigator.userAgent) && !/chrome|chromium|crios/i.test(navigator.userAgent);
+    const isFirefox = /firefox|fxios/i.test(navigator.userAgent);
+    const isFile = window.location.protocol === 'file:';
+
+    return React.createElement('div', {style: {
+      position:'fixed', inset:0, background:'rgba(0,0,0,0.7)', zIndex:99999,
+      display:'flex', alignItems:'center', justifyContent:'center',
+      backdropFilter:'blur(8px)', animation:'snFadeIn 0.3s ease',
+    }, onClick: ()=>setVoiceMicDenied(false)},
+      React.createElement('div', {style: {
+        background:'linear-gradient(145deg, #0d1f35, #152c47)', border:'1px solid rgba(110,231,231,0.2)',
+        borderRadius:20, padding:'32px 28px', maxWidth:420, width:'90%',
+        boxShadow:'0 20px 60px rgba(0,0,0,0.5)', position:'relative',
+      }, onClick: e=>e.stopPropagation()},
+        // Close btn
+        React.createElement('button', {onClick:()=>setVoiceMicDenied(false), style:{
+          position:'absolute', top:14, right:14, background:'none', border:'none',
+          color:C.muted, fontSize:18, cursor:'pointer',
+        }}, '✕'),
+        // Mic icon
+        React.createElement('div', {style:{
+          width:56, height:56, borderRadius:'50%', margin:'0 auto 16px',
+          background:'rgba(239,68,68,0.12)', border:'2px solid rgba(239,68,68,0.3)',
+          display:'flex', alignItems:'center', justifyContent:'center',
+        }},
+          React.createElement('svg', {width:26, height:26, viewBox:'0 0 24 24', fill:'none', stroke:'#ef4444', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round'},
+            React.createElement('path', {d:'M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z'}),
+            React.createElement('path', {d:'M19 10v2a7 7 0 0 1-14 0v-2'}),
+            React.createElement('line', {x1:'1', y1:'1', x2:'23', y2:'23'}),
+          )
+        ),
+        // Title
+        React.createElement('h3', {style:{
+          textAlign:'center', fontFamily:"'Playfair Display',serif", fontSize:20,
+          fontWeight:800, color:C.white, marginBottom:8,
+        }}, 'Microphone Access Needed'),
+        // Subtitle
+        React.createElement('p', {style:{
+          textAlign:'center', fontSize:13, color:C.muted, lineHeight:1.6, marginBottom:20,
+        }}, 'Nova needs microphone permission to hear your voice commands. Here\'s how to enable it:'),
+        // Browser-specific instructions
+        React.createElement('div', {style:{
+          background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)',
+          borderRadius:12, padding:'16px 18px', marginBottom:16,
+        }},
+          isFile ?
+            React.createElement(React.Fragment, null,
+              React.createElement('div', {style:{fontSize:12, fontWeight:700, color:'#f59e0b', marginBottom:8}}, '⚠️ Local File Detected'),
+              React.createElement('div', {style:{fontSize:12, color:'rgba(240,244,248,0.8)', lineHeight:1.7}},
+                'Browsers block microphone access on local files (file://). To use voice mode, serve the app through a local server:'),
+              React.createElement('div', {style:{
+                background:'rgba(0,0,0,0.3)', borderRadius:8, padding:'10px 14px', marginTop:10,
+                fontFamily:"'DM Mono',monospace", fontSize:11, color:C.teal3, lineHeight:1.6,
+              }}, 'python3 -m http.server 8000\n→ Open localhost:8000/sphereflow-app.html')
+            ) :
+          (isChrome || isEdge) ?
+            React.createElement(React.Fragment, null,
+              React.createElement('div', {style:{fontSize:12, fontWeight:700, color:C.teal3, marginBottom:10}},
+                isChrome ? '🔵 Chrome' : '🔵 Edge'),
+              React.createElement('div', {style:{fontSize:12, color:'rgba(240,244,248,0.8)', lineHeight:1.8}},
+                '1. Click the ', React.createElement('strong', {style:{color:C.white}}, 'lock icon'), ' (or tune icon) in the address bar',
+                React.createElement('br'),
+                '2. Find ', React.createElement('strong', {style:{color:C.white}}, 'Microphone'),
+                React.createElement('br'),
+                '3. Change to ', React.createElement('strong', {style:{color:C.green}}, 'Allow'),
+                React.createElement('br'),
+                '4. ', React.createElement('strong', {style:{color:C.white}}, 'Reload'), ' the page and try again'
+              )
+            ) :
+          isSafari ?
+            React.createElement(React.Fragment, null,
+              React.createElement('div', {style:{fontSize:12, fontWeight:700, color:C.teal3, marginBottom:10}}, '🔵 Safari'),
+              React.createElement('div', {style:{fontSize:12, color:'rgba(240,244,248,0.8)', lineHeight:1.8}},
+                '1. Go to ', React.createElement('strong', {style:{color:C.white}}, 'Safari → Settings → Websites'),
+                React.createElement('br'),
+                '2. Click ', React.createElement('strong', {style:{color:C.white}}, 'Microphone'),
+                React.createElement('br'),
+                '3. Find this site and set to ', React.createElement('strong', {style:{color:C.green}}, 'Allow'),
+                React.createElement('br'),
+                '4. Reload the page'
+              )
+            ) :
+          isFirefox ?
+            React.createElement(React.Fragment, null,
+              React.createElement('div', {style:{fontSize:12, fontWeight:700, color:C.teal3, marginBottom:10}}, '🔵 Firefox'),
+              React.createElement('div', {style:{fontSize:12, color:'rgba(240,244,248,0.8)', lineHeight:1.8}},
+                '1. Click the ', React.createElement('strong', {style:{color:C.white}}, 'lock icon'), ' in the address bar',
+                React.createElement('br'),
+                '2. Clear the blocked permission for Microphone',
+                React.createElement('br'),
+                '3. Reload and click the mic button again',
+                React.createElement('br'),
+                React.createElement('em', {style:{color:'#f59e0b', fontSize:11}}, 'Note: Firefox has limited speech recognition support')
+              )
+            ) :
+            React.createElement('div', {style:{fontSize:12, color:'rgba(240,244,248,0.8)', lineHeight:1.8}},
+              '1. Look for a microphone or permissions icon in your address bar',
+              React.createElement('br'),
+              '2. Allow microphone access for this site',
+              React.createElement('br'),
+              '3. Reload the page and try again'
+            )
+        ),
+        // Try again button
+        React.createElement('button', {
+          onClick: ()=>{
+            setVoiceMicDenied(false);
+            // Retry mic after a moment
+            setTimeout(()=> startVoice(voiceTarget || 'home'), 500);
+          },
+          style: {
+            width:'100%', padding:'12px', borderRadius:12, border:'none',
+            background:'linear-gradient(135deg,'+C.teal+','+C.teal2+')',
+            color:'#fff', fontSize:14, fontWeight:700, cursor:'pointer',
+            fontFamily:"'DM Sans',sans-serif", marginBottom:8,
+          }
+        }, '🎙️ Try Again'),
+        React.createElement('button', {
+          onClick: ()=>setVoiceMicDenied(false),
+          style: {
+            width:'100%', padding:'10px', borderRadius:12,
+            background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.08)',
+            color:C.muted, fontSize:12, fontWeight:600, cursor:'pointer',
+            fontFamily:"'DM Sans',sans-serif",
+          }
+        }, 'I\'ll type instead')
+      )
     );
   }
 
@@ -26734,8 +26911,16 @@ IMPORTANT:
   }
 
   async function callNovaAI(userMsg, history){
-    const apiKey = window._sfGetApiKey ? window._sfGetApiKey() : null;
-    if(!apiKey){ setShowKeyModal(true); return null; }
+    // Use async key getter — waits for master key fetch if needed
+    let apiKey = window._sfGetApiKeyAsync ? await window._sfGetApiKeyAsync() : (window._sfGetApiKey ? window._sfGetApiKey() : null);
+    if(!apiKey){
+      if(window._sfIsNovaActivated && window._sfIsNovaActivated()){
+        if(window._sfShowToast) window._sfShowToast('AI engine not connected. Try logging out and back in.', 'error');
+      } else {
+        setShowKeyModal(true);
+      }
+      return null;
+    }
     try {
       const messages = [];
       if(history && history.length > 0){
@@ -27903,19 +28088,51 @@ IMPORTANT:
     const [keyInput, setKeyInput] = React.useState('');
     const [error, setError] = React.useState('');
     const [success, setSuccess] = React.useState('');
-    function handleActivate(){
+    const [showAdmin, setShowAdmin] = React.useState(false);
+    const [masterKeyInput, setMasterKeyInput] = React.useState('');
+    const [masterStatus, setMasterStatus] = React.useState('');
+    async function handleActivate(){
       if(!keyInput.trim()){ setError('Please enter your activation key.'); return; }
       var result = window._sfActivateKey ? window._sfActivateKey(keyInput) : {ok:false, msg:'System error'};
       if(result.ok){
-        setSuccess('Activated! You\'re on the ' + result.label + ' plan.');
+        setSuccess('Activated! Loading AI engine...');
         setNovaApiKey(true);
-        setTimeout(()=>setShowKeyModal(false), 1500);
+        // CRITICAL: Fetch the master API key from Supabase now that we're activated
+        if(window._sfFetchMasterKey){
+          await window._sfFetchMasterKey();
+        }
+        if(window._sfMasterApiKey){
+          setSuccess('Activated! You\'re on the ' + result.label + ' plan. Nova is ready.');
+        } else {
+          setSuccess('Activated on ' + result.label + ' plan.');
+          setError('AI engine could not connect. Try logging out and back in, or contact support.');
+        }
+        setTimeout(()=>setShowKeyModal(false), 2000);
       } else {
         setError(result.msg);
       }
     }
+    async function handleSeedMaster(){
+      if(!masterKeyInput.trim()){ setMasterStatus('error:Enter your Anthropic API key'); return; }
+      if(!masterKeyInput.trim().startsWith('sk-ant-')){ setMasterStatus('error:Key should start with sk-ant-'); return; }
+      setMasterStatus('loading');
+      try {
+        if(window._sfSeedMasterKey){
+          await window._sfSeedMasterKey(masterKeyInput.trim());
+          if(window._sfMasterApiKey){
+            setMasterStatus('success');
+          } else {
+            setMasterStatus('error:Failed to save. Check console for details.');
+          }
+        } else {
+          setMasterStatus('error:System not ready. Reload and try again.');
+        }
+      } catch(e){
+        setMasterStatus('error:' + (e.message || 'Unknown error'));
+      }
+    }
     return <div style={{position:'fixed',inset:0,zIndex:99999,background:'rgba(0,0,0,0.7)',display:'flex',alignItems:'center',justifyContent:'center',padding:20}} onClick={()=>setShowKeyModal(false)}>
-      <div style={{background:'#0C1E2E',border:'1px solid rgba(110,231,231,0.2)',borderRadius:16,padding:28,maxWidth:420,width:'100%',boxShadow:'0 24px 64px rgba(0,0,0,0.5)'}} onClick={e=>e.stopPropagation()}>
+      <div style={{background:'#0C1E2E',border:'1px solid rgba(110,231,231,0.2)',borderRadius:16,padding:28,maxWidth:420,width:'100%',boxShadow:'0 24px 64px rgba(0,0,0,0.5)',maxHeight:'90vh',overflow:'auto'}} onClick={e=>e.stopPropagation()}>
         <div style={{fontSize:18,fontWeight:700,color:'#F0F4F8',marginBottom:4}}>Activate Nova AI ✦</div>
         <p style={{fontSize:13,color:C.muted,marginBottom:20,lineHeight:1.6}}>Enter the activation key from your SphereFlow subscription to unlock AI-powered features including Supernova, Ask Nova, and the Listing Engine.</p>
         {error && <div style={{background:'rgba(231,76,60,0.1)',border:'1px solid rgba(231,76,60,0.3)',borderRadius:8,padding:'8px 12px',fontSize:12,color:'#E74C3C',marginBottom:12}}>{error}</div>}
@@ -27924,7 +28141,25 @@ IMPORTANT:
           onKeyDown={e=>{if(e.key==='Enter')handleActivate();}}
         />
         <button onClick={handleActivate} disabled={!!success} style={{width:'100%',padding:12,borderRadius:10,border:'none',background:success?'rgba(46,204,113,0.3)':'linear-gradient(135deg,#0FA0A0,#0B7A75)',color:'#fff',fontSize:14,fontWeight:700,cursor:success?'default':'pointer',fontFamily:"'DM Sans',sans-serif"}}>{success?'✓ Activated':'Activate Nova ✦'}</button>
-        <button onClick={()=>setShowKeyModal(false)} style={{width:'100%',padding:10,marginTop:8,borderRadius:10,border:'none',background:'transparent',color:C.muted,fontSize:12,cursor:'pointer',fontFamily:"'DM Sans',sans-serif"}}>Cancel</button>
+
+        {/* Admin: Master API Key */}
+        <div style={{marginTop:20,borderTop:'1px solid rgba(255,255,255,0.06)',paddingTop:16}}>
+          <button onClick={()=>setShowAdmin(!showAdmin)} style={{background:'none',border:'none',color:C.muted,fontSize:11,cursor:'pointer',fontFamily:"'DM Sans',sans-serif",display:'flex',alignItems:'center',gap:6}}>
+            <span style={{transform:showAdmin?'rotate(90deg)':'rotate(0)',transition:'transform 0.2s',display:'inline-block'}}>▶</span>
+            Admin: Connect AI Engine
+          </button>
+          {showAdmin && <div style={{marginTop:12}}>
+            <p style={{fontSize:11,color:C.muted,marginBottom:10,lineHeight:1.5}}>Paste your Anthropic API key below. This is stored securely in Supabase and powers all AI features for your users.</p>
+            {masterStatus === 'success' && <div style={{background:'rgba(46,204,113,0.1)',border:'1px solid rgba(46,204,113,0.3)',borderRadius:8,padding:'8px 12px',fontSize:12,color:'#2ECC71',marginBottom:10}}>✓ AI engine connected! Reload the page to activate.</div>}
+            {masterStatus.startsWith('error:') && <div style={{background:'rgba(231,76,60,0.1)',border:'1px solid rgba(231,76,60,0.3)',borderRadius:8,padding:'8px 12px',fontSize:12,color:'#E74C3C',marginBottom:10}}>{masterStatus.replace('error:','')}</div>}
+            <input value={masterKeyInput} onChange={e=>setMasterKeyInput(e.target.value)} placeholder="sk-ant-api03-..." style={{width:'100%',padding:'10px 12px',borderRadius:8,border:'1px solid rgba(167,139,250,0.25)',background:'rgba(255,255,255,0.04)',color:'#F0F4F8',fontSize:12,outline:'none',fontFamily:"'DM Mono',monospace",marginBottom:10,boxSizing:'border-box'}}
+              onKeyDown={e=>{if(e.key==='Enter')handleSeedMaster();}}
+            />
+            <button onClick={handleSeedMaster} disabled={masterStatus==='loading'} style={{width:'100%',padding:10,borderRadius:8,border:'none',background:'linear-gradient(135deg,#9B7FD4,#7C5CBF)',color:'#fff',fontSize:12,fontWeight:700,cursor:'pointer',fontFamily:"'DM Sans',sans-serif"}}>{masterStatus==='loading'?'Connecting...':'Connect AI Engine'}</button>
+          </div>}
+        </div>
+
+        <button onClick={()=>setShowKeyModal(false)} style={{width:'100%',padding:10,marginTop:12,borderRadius:10,border:'none',background:'transparent',color:C.muted,fontSize:12,cursor:'pointer',fontFamily:"'DM Sans',sans-serif"}}>Cancel</button>
       </div>
     </div>;
   }
@@ -27933,6 +28168,7 @@ IMPORTANT:
   if(mode==='home'){
     return <div style={S.wrap}>
       {showKeyModal && <ApiKeyModal/>}
+      <MicPermissionModal/>
       <div style={{...S.orb,width:500,height:500,background:C.teal3,top:-200,left:-100}}></div>
       <div style={{...S.orb,width:400,height:400,background:C.purple,bottom:-150,right:-100}}></div>
       <div style={S.header}>
@@ -28005,6 +28241,7 @@ IMPORTANT:
   if(mode==='chat'){
     return <div style={S.wrap}>
       {showKeyModal && <ApiKeyModal/>}
+      <MicPermissionModal/>
       <div style={{...S.orb,width:500,height:500,background:C.teal3,top:-200,left:-100}}></div>
       <div style={{padding:'16px 24px 0',flexShrink:0,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
         <div>
