@@ -6257,7 +6257,7 @@ function TodayScreen(){
             {/* Quick actions */}
             <DCard style={{padding:14}}>
               <div style={{fontSize:11,fontWeight:700,color:C.muted,letterSpacing:'0.06em',textTransform:'uppercase',marginBottom:10}}>Quick actions</div>
-              {[{label:'Add Contact',act:()=>window.sfShow('crm')},{label:'Pipeline',act:()=>window.sfShow('pipeline')},{label:'Create Content',act:()=>window.sfShow('content')},{label:'Open House Sign-In',act:()=>{if(window.sfOpenHouseSignIn)window.sfOpenHouseSignIn();}},{label:'Quick Note',act:()=>{if(window.sfQuickMeetingNote)window.sfQuickMeetingNote();}},{label:'Log Expense',act:()=>{if(window.sfOpenExpenseTracker)window.sfOpenExpenseTracker();}},{label:'Ask Nova ✦',act:()=>{window.sfShow('ai');setTimeout(function(){if(window.showScene)window.showScene('chat');},100);}}].map(function(qa){return(
+              {[{label:'Add Contact',act:()=>window.sfShow('crm')},{label:'Pipeline',act:()=>window.sfShow('pipeline')},{label:'Build CMA',act:()=>window.sfShow('cma')},{label:'Create Content',act:()=>window.sfShow('content')},{label:'Open House Sign-In',act:()=>{if(window.sfOpenHouseSignIn)window.sfOpenHouseSignIn();}},{label:'Quick Note',act:()=>{if(window.sfQuickMeetingNote)window.sfQuickMeetingNote();}},{label:'Log Expense',act:()=>{if(window.sfOpenExpenseTracker)window.sfOpenExpenseTracker();}},{label:'Ask Nova ✦',act:()=>{window.sfShow('ai');setTimeout(function(){if(window.showScene)window.showScene('chat');},100);}}].map(function(qa){return(
                 <button key={qa.label} onClick={qa.act} style={{display:'block',width:'100%',padding:'8px 12px',marginBottom:4,
                   borderRadius:8,border:'1px solid '+C.border,background:C.subtle||'transparent',
                   color:C.white,fontSize:12,fontWeight:500,cursor:'pointer',textAlign:'left',
@@ -7002,6 +7002,47 @@ window._sfSchemas = {
   transactions: {required:['contact','value','stage'],defaults:{contact:'',value:0,commission:0,stage:'active',address:'',closeDate:null,notes:'',type:'buyer'}},
   scheduler: {required:['title','date'],defaults:{id:null,title:'',date:'',time:'09:00',duration:60,type:'showing',contact:'',address:'',notes:'',color:'#0FA0A0'}},
   invoicing: {required:['client','amount'],defaults:{id:null,client:'',amount:0,status:'draft',date:null,dueDate:null,items:[],notes:''}},
+  cmas: {
+    required:['id','subjectAddress'],
+    defaults:{
+      id:function(){return 'cma_'+Date.now()+Math.random().toString(36).slice(2,6);},
+      contactId:null, contactName:'',
+      subjectAddress:'', subjectBeds:0, subjectBaths:0, subjectSqft:0, subjectLot:0, subjectYear:null, subjectType:'detached', subjectCondition:'good', subjectFeatures:'',
+      comps:[],
+      adjPerSqft:200, adjPerBed:8000, adjPerBath:5000,
+      conditionMultipliers:{excellent:1.05,good:1.0,fair:0.95,poor:0.88},
+      recommendedLow:0, recommendedMid:0, recommendedHigh:0,
+      status:'draft',
+      pdfUrl:null, publicToken:null,
+      createdAt:null, updatedAt:null, sentAt:null, viewedAt:null
+    }
+  },
+  valuation_leads: {
+    required:['id','address'],
+    defaults:{
+      id:function(){return 'vl_'+Date.now()+Math.random().toString(36).slice(2,6);},
+      address:'', city:'', neighborhood:'',
+      beds:0, baths:0, sqft:0, propertyType:'detached', condition:'good',
+      instantEstimateLow:0, instantEstimateMid:0, instantEstimateHigh:0,
+      name:'', email:'', phone:'',
+      message:'',
+      status:'new',
+      convertedContactId:null, convertedCmaId:null,
+      createdAt:null, contactedAt:null
+    }
+  },
+  agent_valuation_page: {
+    required:['slug'],
+    defaults:{
+      slug:'', enabled:true,
+      headline:'', subheadline:'',
+      heroImageUrl:'', agentPhotoUrl:'',
+      marketArea:'Brampton, ON',
+      ctaButtonText:"Get My Home's Value",
+      testimonial:'',
+      updatedAt:null
+    }
+  },
 };
 window._sfNormalize = function(table, record){var schema=window._sfSchemas[table];if(!schema)return record;var result={};for(var key in schema.defaults){if(record.hasOwnProperty(key)){result[key]=record[key];}else{var def=schema.defaults[key];result[key]=typeof def==='function'?def():(Array.isArray(def)?[]:def);}}for(var key in record){if(!result.hasOwnProperty(key))result[key]=record[key];}return result;};
 window._sfValidate = function(table, record){var schema=window._sfSchemas[table];if(!schema)return{valid:true,errors:[]};var errors=[];schema.required.forEach(function(f){if(!record[f]&&record[f]!==0)errors.push(f+' is required');});return{valid:errors.length===0,errors:errors};};
@@ -7115,7 +7156,7 @@ window.sfCloseSearch=function(){var m=document.getElementById('sf-search-modal')
 window._sfSearchQuery=function(q){
   var res=document.getElementById('sf-search-results');if(!res)return;q=q.toLowerCase().trim();if(!q){res.innerHTML='';return;}
   var matches=[];
-  var screens=[{n:'Today Dashboard',a:'today',k:'today home dashboard'},{n:'Nova AI Tools',a:'tools',k:'ai tools listing showing'},{n:'Ask Nova',a:'chat',k:'ask nova chat'},{n:'Leads / CRM',a:'crm',k:'leads contacts crm sphere'},{n:'Pipeline',a:'pipeline',k:'pipeline deals stages'},{n:'Deals',a:'transactions',k:'deals transactions closed commission'},{n:'Communication Hub',a:'comms',k:'inbox email sms whatsapp'},{n:'Calendar',a:'schedule',k:'calendar appointments showings'},{n:'Email Campaigns',a:'emailcamp',k:'email campaigns drip'},{n:'Content Studio',a:'content',k:'content studio social media'},{n:'Funnels',a:'funnels',k:'funnels landing pages'},{n:'Reputation',a:'reputation',k:'reviews reputation google'},{n:'Analytics',a:'analytics',k:'analytics reports dashboard'},{n:'Business Hub',a:'business',k:'business invoicing forms documents goals team'},{n:'Referral Engine',a:'referral',k:'referrals tracking revenue'},{n:'Nova Voice AI',a:'voiceai',k:'voice ai phone calls'},{n:'Supernova',a:'supernova',k:'supernova autonomous agent tasks automate'}];
+  var screens=[{n:'Today Dashboard',a:'today',k:'today home dashboard'},{n:'Nova AI Tools',a:'tools',k:'ai tools listing showing'},{n:'Ask Nova',a:'chat',k:'ask nova chat'},{n:'Leads / CRM',a:'crm',k:'leads contacts crm sphere'},{n:'Pipeline',a:'pipeline',k:'pipeline deals stages'},{n:'Deals',a:'transactions',k:'deals transactions closed commission'},{n:'CMA Builder',a:'cma',k:'cma comparative market analysis valuation pricing'},{n:'Communication Hub',a:'comms',k:'inbox email sms whatsapp'},{n:'Calendar',a:'schedule',k:'calendar appointments showings'},{n:'Email Campaigns',a:'emailcamp',k:'email campaigns drip'},{n:'Content Studio',a:'content',k:'content studio social media'},{n:'Funnels',a:'funnels',k:'funnels landing pages'},{n:'Reputation',a:'reputation',k:'reviews reputation google'},{n:'Analytics',a:'analytics',k:'analytics reports dashboard'},{n:'Business Hub',a:'business',k:'business invoicing forms documents goals team'},{n:'Referral Engine',a:'referral',k:'referrals tracking revenue'},{n:'Nova Voice AI',a:'voiceai',k:'voice ai phone calls'},{n:'Supernova',a:'supernova',k:'supernova autonomous agent tasks automate'}];
   screens.forEach(function(s){if(s.n.toLowerCase().includes(q)||s.k.includes(q))matches.push({type:'Screen',label:s.n,action:"window.sfShow('"+s.a+"');window.sfCloseSearch();"});});
   var _contacts=window._sfCRMContacts||[];
   if(_contacts.length===0){try{_contacts=window.sfGetData?window.sfGetData('contacts')||[]:[];}catch(e){}}
@@ -7841,6 +7882,7 @@ window.sfRemountAll = function(){
     {id:'pipeline-root',  comp:'PipelineApp'},
     {id:'referral-root',  comp:'ReferralEngine'},
     {id:'transactions-root', comp:'TransactionManager'},
+    {id:'cma-root',          comp:'CMAManager'},
     {id:'nova-goals-root',   comp:'GoalTracker'},
     {id:'nova-global-root',  comp:'GlobalNova'},
   ];
@@ -7994,6 +8036,8 @@ window.sfShow = function(name, skipHash) {
   var onb = document.getElementById('screen-onboarding');
   var txn = document.getElementById('screen-transactions');
   [ref,onb,txn].forEach(function(el){ if(el) el.style.display=''; });
+  var cma = document.getElementById('screen-cma');
+  if(cma) cma.style.display='';
   var inb = document.getElementById('screen-inbox');
   if(inb) inb.style.display='';
   var sch = document.getElementById('screen-schedule');
@@ -8028,6 +8072,8 @@ window.sfShow = function(name, skipHash) {
   if(onb) onb.classList.toggle('sf-active', name === 'onboarding');
   var txn = document.getElementById('screen-transactions');
   if(txn) txn.classList.toggle('sf-active', name === 'transactions');
+  var cma = document.getElementById('screen-cma');
+  if(cma) cma.classList.toggle('sf-active', name === 'cma');
   var inb = document.getElementById('screen-inbox');
   if(inb) inb.classList.toggle('sf-active', name === 'inbox');
   var sch = document.getElementById('screen-schedule');
@@ -8314,6 +8360,7 @@ const NAV_TABS = [
   { id:'crm',          label:'Leads',        icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2'/><circle cx='9' cy='7' r='4'/><path d='M23 21v-2a4 4 0 00-3-3.87'/></svg>", minTier:1 },
   { id:'pipeline',     label:'Pipeline',     icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><line x1='18' y1='20' x2='18' y2='10'/><line x1='12' y1='20' x2='12' y2='4'/><line x1='6' y1='20' x2='6' y2='14'/><path d='M3 20h18'/></svg>", minTier:1 },
   { id:'transactions', label:'Deals',        icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2'/><rect x='8' y='2' width='8' height='4' rx='1'/><line x1='9' y1='12' x2='15' y2='12'/><line x1='9' y1='16' x2='15' y2='16'/></svg>", minTier:1 },
+  { id:'cma',          label:'CMAs',         icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 12l2-2 4 4 8-8 4 4'/><path d='M3 21h18'/><path d='M5 21V11'/><path d='M19 21V11'/></svg>", minTier:1 },
   { id:'referral',     label:'Referral',     icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 14l4-4 3 2 4-4 3 2 4-4'/><path d='M2 14h4l2-2'/><path d='M22 6h-4l-2 2'/><path d='M8 18l2-2 4 2 2-2'/><path d='M2 17l4 1 2-2'/><path d='M22 17l-4 1-2-2'/></svg>", minTier:2 },
 ];
 
@@ -12454,6 +12501,7 @@ const NAV_TABS = [
   { id:'crm',          label:'Leads',        icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2'/><circle cx='9' cy='7' r='4'/><path d='M23 21v-2a4 4 0 00-3-3.87'/></svg>", minTier:1 },
   { id:'pipeline',     label:'Pipeline',     icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><line x1='18' y1='20' x2='18' y2='10'/><line x1='12' y1='20' x2='12' y2='4'/><line x1='6' y1='20' x2='6' y2='14'/><path d='M3 20h18'/></svg>", minTier:1 },
   { id:'transactions', label:'Deals',        icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2'/><rect x='8' y='2' width='8' height='4' rx='1'/><line x1='9' y1='12' x2='15' y2='12'/><line x1='9' y1='16' x2='15' y2='16'/></svg>", minTier:1 },
+  { id:'cma',          label:'CMAs',         icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 12l2-2 4 4 8-8 4 4'/><path d='M3 21h18'/><path d='M5 21V11'/><path d='M19 21V11'/></svg>", minTier:1 },
   { id:'referral',     label:'Referral',     icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 14l4-4 3 2 4-4 3 2 4-4'/><path d='M2 14h4l2-2'/><path d='M22 6h-4l-2 2'/><path d='M8 18l2-2 4 2 2-2'/><path d='M2 17l4 1 2-2'/><path d='M22 17l-4 1-2-2'/></svg>", minTier:2 },
 ];
 
@@ -14798,6 +14846,7 @@ const NAV_TABS = [
   { id:'crm',          label:'Leads',        icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2'/><circle cx='9' cy='7' r='4'/><path d='M23 21v-2a4 4 0 00-3-3.87'/></svg>", minTier:1 },
   { id:'pipeline',     label:'Pipeline',     icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><line x1='18' y1='20' x2='18' y2='10'/><line x1='12' y1='20' x2='12' y2='4'/><line x1='6' y1='20' x2='6' y2='14'/><path d='M3 20h18'/></svg>", minTier:1 },
   { id:'transactions', label:'Deals',        icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2'/><rect x='8' y='2' width='8' height='4' rx='1'/><line x1='9' y1='12' x2='15' y2='12'/><line x1='9' y1='16' x2='15' y2='16'/></svg>", minTier:1 },
+  { id:'cma',          label:'CMAs',         icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 12l2-2 4 4 8-8 4 4'/><path d='M3 21h18'/><path d='M5 21V11'/><path d='M19 21V11'/></svg>", minTier:1 },
   { id:'referral',     label:'Referral',     icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 14l4-4 3 2 4-4 3 2 4-4'/><path d='M2 14h4l2-2'/><path d='M22 6h-4l-2 2'/><path d='M8 18l2-2 4 2 2-2'/><path d='M2 17l4 1 2-2'/><path d='M22 17l-4 1-2-2'/></svg>", minTier:2 },
 ];
 
@@ -17880,6 +17929,7 @@ const NAV_TABS = [
   { id:'crm',          label:'Leads',        icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2'/><circle cx='9' cy='7' r='4'/><path d='M23 21v-2a4 4 0 00-3-3.87'/></svg>", minTier:1 },
   { id:'pipeline',     label:'Pipeline',     icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><line x1='18' y1='20' x2='18' y2='10'/><line x1='12' y1='20' x2='12' y2='4'/><line x1='6' y1='20' x2='6' y2='14'/><path d='M3 20h18'/></svg>", minTier:1 },
   { id:'transactions', label:'Deals',        icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2'/><rect x='8' y='2' width='8' height='4' rx='1'/><line x1='9' y1='12' x2='15' y2='12'/><line x1='9' y1='16' x2='15' y2='16'/></svg>", minTier:1 },
+  { id:'cma',          label:'CMAs',         icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 12l2-2 4 4 8-8 4 4'/><path d='M3 21h18'/><path d='M5 21V11'/><path d='M19 21V11'/></svg>", minTier:1 },
   { id:'referral',     label:'Referral',     icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 14l4-4 3 2 4-4 3 2 4-4'/><path d='M2 14h4l2-2'/><path d='M22 6h-4l-2 2'/><path d='M8 18l2-2 4 2 2-2'/><path d='M2 17l4 1 2-2'/><path d='M22 17l-4 1-2-2'/></svg>", minTier:2 },
 ];
 
@@ -19062,6 +19112,7 @@ if(window._sfLoadTick)window._sfLoadTick();
 <div id="screen-onboarding"><div id="onboarding-root" style="height:100%;width:100%;"></div></div>
 <div id="screen-templates"><div id="templates-root" style="height:100%;width:100%;"></div></div>
 <div id="screen-transactions"><div id="transactions-root" style="height:100%;width:100%;"></div></div>
+<div id="screen-cma"><div id="cma-root" style="height:100%;width:100%;"></div></div>
 <div id="screen-inbox"><div id="inbox-root" style="height:100%;width:100%;"></div></div>
 <div id="screen-goals"><div id="goals-root" style="height:100%;width:100%;"></div></div>
 <div id="screen-schedule"><div id="schedule-root" style="height:100%;width:100%;"></div></div>
@@ -19717,6 +19768,7 @@ const NAV_TABS_TPL = [
   { id:'crm',          label:'Leads',        icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2'/><circle cx='9' cy='7' r='4'/><path d='M23 21v-2a4 4 0 00-3-3.87'/></svg>", minTier:1 },
   { id:'pipeline',     label:'Pipeline',     icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><line x1='18' y1='20' x2='18' y2='10'/><line x1='12' y1='20' x2='12' y2='4'/><line x1='6' y1='20' x2='6' y2='14'/><path d='M3 20h18'/></svg>", minTier:1 },
   { id:'transactions', label:'Deals',        icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2'/><rect x='8' y='2' width='8' height='4' rx='1'/><line x1='9' y1='12' x2='15' y2='12'/><line x1='9' y1='16' x2='15' y2='16'/></svg>", minTier:1 },
+  { id:'cma',          label:'CMAs',         icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 12l2-2 4 4 8-8 4 4'/><path d='M3 21h18'/><path d='M5 21V11'/><path d='M19 21V11'/></svg>", minTier:1 },
   { id:'referral',     label:'Referral',     icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 14l4-4 3 2 4-4 3 2 4-4'/><path d='M2 14h4l2-2'/><path d='M22 6h-4l-2 2'/><path d='M8 18l2-2 4 2 2-2'/><path d='M2 17l4 1 2-2'/><path d='M22 17l-4 1-2-2'/></svg>", minTier:2 },
 ];
 
@@ -20080,6 +20132,7 @@ const NAV_TABS_TX = [
   { id:'crm',          label:'Leads',        icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2'/><circle cx='9' cy='7' r='4'/><path d='M23 21v-2a4 4 0 00-3-3.87'/></svg>", minTier:1 },
   { id:'pipeline',     label:'Pipeline',     icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><line x1='18' y1='20' x2='18' y2='10'/><line x1='12' y1='20' x2='12' y2='4'/><line x1='6' y1='20' x2='6' y2='14'/><path d='M3 20h18'/></svg>", minTier:1 },
   { id:'transactions', label:'Deals',        icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2'/><rect x='8' y='2' width='8' height='4' rx='1'/><line x1='9' y1='12' x2='15' y2='12'/><line x1='9' y1='16' x2='15' y2='16'/></svg>", minTier:1 },
+  { id:'cma',          label:'CMAs',         icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 12l2-2 4 4 8-8 4 4'/><path d='M3 21h18'/><path d='M5 21V11'/><path d='M19 21V11'/></svg>", minTier:1 },
   { id:'referral',     label:'Referral',     icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 14l4-4 3 2 4-4 3 2 4-4'/><path d='M2 14h4l2-2'/><path d='M22 6h-4l-2 2'/><path d='M8 18l2-2 4 2 2-2'/><path d='M2 17l4 1 2-2'/><path d='M22 17l-4 1-2-2'/></svg>", minTier:2 },
 ];
 
@@ -21240,6 +21293,1786 @@ if(window._sfLoadTick)window._sfLoadTick();
 </script>
 
 <!-- ══════════════════════════════════════════════════
+     FEATURE: CMA BUILDER (Comparative Market Analysis)
+══════════════════════════════════════════════════ -->
+<script type="text/babel">
+(function(){
+const CMA_C=window._sfGetColors?window._sfGetColors():{bg:'#081828',bg2:'#0C1E2E',card:'#0F2336',border:'rgba(255,255,255,0.08)',teal:'#0FA0A0',teal2:'#0B7A75',gold:'#D4A843',white:'#F0F4F8',muted:'#6B8BA4',green:'#2ECC71',red:'#E74C3C',amber:'#F39C12',blue:'#5B9BD5',purple:'#9B7FD4'};
+
+// ── Helpers ─────────────────────────────────────────
+function fmtMoney(n){if(!n&&n!==0)return '—';return '$'+Math.round(n).toLocaleString();}
+function fmtMoneyK(n){if(!n&&n!==0)return '—';if(n>=1000000)return '$'+(n/1000000).toFixed(2)+'M';return '$'+Math.round(n/1000)+'K';}
+function fmtDate(d){if(!d)return '—';try{return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}catch(e){return d;}}
+function newId(prefix){return (prefix||'id_')+Date.now()+Math.random().toString(36).slice(2,6);}
+
+function makeBlankCMA(){
+  var schema=window._sfSchemas&&window._sfSchemas.cmas;
+  if(schema&&window._sfNormalize){
+    var rec=window._sfNormalize('cmas',{});
+    rec.createdAt=new Date().toISOString();
+    rec.updatedAt=rec.createdAt;
+    return rec;
+  }
+  return {
+    id:newId('cma_'), contactId:null, contactName:'',
+    subjectAddress:'', subjectBeds:0, subjectBaths:0, subjectSqft:0, subjectLot:0, subjectYear:null, subjectType:'detached', subjectCondition:'good', subjectFeatures:'',
+    comps:[], adjPerSqft:200, adjPerBed:8000, adjPerBath:5000,
+    conditionMultipliers:{excellent:1.05,good:1.0,fair:0.95,poor:0.88},
+    recommendedLow:0, recommendedMid:0, recommendedHigh:0,
+    status:'draft', pdfUrl:null, publicToken:null,
+    createdAt:new Date().toISOString(), updatedAt:new Date().toISOString(), sentAt:null, viewedAt:null
+  };
+}
+
+function makeBlankComp(){
+  return {
+    id:newId('comp_'),
+    address:'', soldPrice:0, soldDate:'',
+    beds:0, baths:0, sqft:0, lot:0, year:null,
+    condition:'good', notes:'',
+    // computed adjustments stored alongside for transparency
+    sqftAdj:0, bedAdj:0, bathAdj:0, conditionAdj:0,
+    adjustedPrice:0
+  };
+}
+
+// ── Price calculation ───────────────────────────────
+function calcAdjustedComp(comp, subj, cma){
+  var sqftDelta=(subj.subjectSqft||0)-(comp.sqft||0);
+  var sqftAdj=sqftDelta*(cma.adjPerSqft||200);
+  var bedDelta=(subj.subjectBeds||0)-(comp.beds||0);
+  var bedAdj=bedDelta*(cma.adjPerBed||8000);
+  var bathDelta=(subj.subjectBaths||0)-(comp.baths||0);
+  var bathAdj=bathDelta*(cma.adjPerBath||5000);
+  // condition: scale comp's sold price toward subject's condition baseline
+  var compMult=(cma.conditionMultipliers||{})[comp.condition]||1.0;
+  var subjMult=(cma.conditionMultipliers||{})[subj.subjectCondition]||1.0;
+  var conditionAdj=Math.round((comp.soldPrice||0)*((subjMult/compMult)-1));
+  var adjustedPrice=(comp.soldPrice||0)+sqftAdj+bedAdj+bathAdj+conditionAdj;
+  return {sqftAdj:Math.round(sqftAdj),bedAdj:Math.round(bedAdj),bathAdj:Math.round(bathAdj),conditionAdj:Math.round(conditionAdj),adjustedPrice:Math.round(adjustedPrice)};
+}
+
+function recomputeCMA(cma){
+  var updatedComps=(cma.comps||[]).map(function(c){
+    var adj=calcAdjustedComp(c,cma,cma);
+    return Object.assign({},c,adj);
+  });
+  var prices=updatedComps.map(function(c){return c.adjustedPrice;}).filter(function(p){return p>0;});
+  var low=0,mid=0,high=0;
+  if(prices.length>0){
+    var sorted=prices.slice().sort(function(a,b){return a-b;});
+    low=sorted[0];
+    high=sorted[sorted.length-1];
+    mid=Math.round(prices.reduce(function(a,b){return a+b;},0)/prices.length);
+  }
+  return Object.assign({},cma,{
+    comps:updatedComps,
+    recommendedLow:low,
+    recommendedMid:mid,
+    recommendedHigh:high,
+    updatedAt:new Date().toISOString()
+  });
+}
+
+// ── localStorage data layer ─────────────────────────
+var STORAGE_KEY='sf_cmas_v1';
+
+function loadCMAs(){
+  try{
+    var raw=localStorage.getItem(STORAGE_KEY);
+    if(!raw)return [];
+    var parsed=JSON.parse(raw);
+    return Array.isArray(parsed)?parsed:[];
+  }catch(e){return [];}
+}
+
+function saveCMAs(list){
+  try{
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(list));
+    if(window.sfSaveData){window.sfSaveData('cmas',list).catch(function(){});}
+  }catch(e){console.error('CMA save error:',e);}
+}
+
+// ── Demo seed data (only if empty AND in alex/demo mode) ──
+function seedDemoCMAs(){
+  var existing=loadCMAs();
+  if(existing.length>0)return existing;
+  if(window._sfUserMode==='fresh')return [];
+  var sample=recomputeCMA(Object.assign(makeBlankCMA(),{
+    id:'cma_demo_1',
+    contactName:'Sarah & James Chen',
+    subjectAddress:'42 Maple Ridge Cres, Brampton, ON',
+    subjectBeds:4, subjectBaths:3, subjectSqft:2400, subjectLot:5500, subjectYear:2008,
+    subjectType:'detached', subjectCondition:'good',
+    subjectFeatures:'Finished basement, 2-car garage, hardwood floors throughout',
+    comps:[
+      Object.assign(makeBlankComp(),{address:'38 Maple Ridge Cres',soldPrice:1095000,soldDate:'2026-02-14',beds:4,baths:3,sqft:2350,lot:5400,year:2007,condition:'good'}),
+      Object.assign(makeBlankComp(),{address:'15 Elmstone Ct',soldPrice:1145000,soldDate:'2026-01-22',beds:4,baths:4,sqft:2520,lot:5600,year:2010,condition:'excellent'}),
+      Object.assign(makeBlankComp(),{address:'77 Brisdale Dr',soldPrice:1042000,soldDate:'2026-02-28',beds:4,baths:3,sqft:2280,lot:5200,year:2006,condition:'fair'})
+    ],
+    status:'draft'
+  }));
+  return [sample];
+}
+
+// ── CMA List View ──────────────────────────────────
+function CMAList({cmas,onNew,onOpen,onDelete}){
+  var C=CMA_C;
+  var [filter,setFilter]=React.useState('all');
+  var filtered=cmas.filter(function(c){
+    if(filter==='all')return true;
+    return c.status===filter;
+  }).sort(function(a,b){return new Date(b.updatedAt||0)-new Date(a.updatedAt||0);});
+
+  var counts={all:cmas.length,draft:0,sent:0,viewed:0};
+  cmas.forEach(function(c){if(counts[c.status]!==undefined)counts[c.status]++;});
+
+  return (
+    <div style={{padding:'24px 28px',maxWidth:1200,margin:'0 auto'}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8,flexWrap:'wrap',gap:12}}>
+        <div>
+          <div style={{fontSize:24,fontWeight:700,color:C.white,fontFamily:"'DM Sans',sans-serif"}}>CMA Builder</div>
+          <div style={{fontSize:13,color:C.muted,marginTop:4}}>Comparative market analyses for your seller leads</div>
+        </div>
+        <button onClick={onNew} style={{padding:'12px 22px',borderRadius:10,background:C.gold,border:'none',color:'#081828',fontSize:13,fontWeight:700,cursor:'pointer',fontFamily:"'DM Sans',sans-serif",letterSpacing:'0.02em'}}>+ New CMA</button>
+      </div>
+
+      <div style={{display:'flex',gap:6,marginTop:24,marginBottom:18,borderBottom:'1px solid '+C.border,paddingBottom:0,overflowX:'auto'}}>
+        {[{k:'all',l:'All'},{k:'draft',l:'Drafts'},{k:'sent',l:'Sent'},{k:'viewed',l:'Viewed'}].map(function(t){
+          var active=filter===t.k;
+          return (
+            <button key={t.k} onClick={function(){setFilter(t.k);}} style={{padding:'10px 16px',background:'none',border:'none',borderBottom:'2px solid '+(active?C.teal:'transparent'),color:active?C.teal:C.muted,fontSize:12.5,fontWeight:active?700:500,cursor:'pointer',fontFamily:"'DM Sans',sans-serif",letterSpacing:'0.02em',whiteSpace:'nowrap'}}>
+              {t.l} <span style={{opacity:0.6,marginLeft:4}}>{counts[t.k]||0}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {filtered.length===0?(
+        <div style={{padding:'80px 20px',textAlign:'center',background:C.card,borderRadius:14,border:'1px dashed '+C.border}}>
+          <div style={{fontSize:48,marginBottom:16,opacity:0.4}}>🏠</div>
+          <div style={{fontSize:16,fontWeight:600,color:C.white,marginBottom:8}}>No CMAs yet</div>
+          <div style={{fontSize:13,color:C.muted,maxWidth:420,margin:'0 auto 22px'}}>Build a comparative market analysis to help sellers price their home with confidence — and win more listings.</div>
+          <button onClick={onNew} style={{padding:'11px 22px',borderRadius:10,background:C.teal,border:'none',color:'#fff',fontSize:13,fontWeight:700,cursor:'pointer',fontFamily:"'DM Sans',sans-serif"}}>Build your first CMA →</button>
+        </div>
+      ):(
+        <div style={{display:'grid',gap:12}}>
+          {filtered.map(function(c){
+            var statusColor={draft:C.muted,sent:C.teal,viewed:C.gold,expired:C.red}[c.status]||C.muted;
+            var statusBg={draft:'rgba(107,139,164,0.12)',sent:'rgba(15,160,160,0.12)',viewed:'rgba(212,168,67,0.15)',expired:'rgba(231,76,60,0.12)'}[c.status]||'rgba(107,139,164,0.12)';
+            return (
+              <div key={c.id} onClick={function(){onOpen(c.id);}} style={{padding:'18px 20px',background:C.card,borderRadius:12,border:'1px solid '+C.border,cursor:'pointer',transition:'all 0.15s',display:'flex',justifyContent:'space-between',alignItems:'center',gap:16,flexWrap:'wrap'}} onMouseEnter={function(e){e.currentTarget.style.borderColor=C.teal+'60';}} onMouseLeave={function(e){e.currentTarget.style.borderColor=C.border;}}>
+                <div style={{flex:'1 1 280px',minWidth:0}}>
+                  <div style={{fontSize:15,fontWeight:600,color:C.white,marginBottom:4,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{c.subjectAddress||'Untitled CMA'}</div>
+                  <div style={{fontSize:12,color:C.muted,display:'flex',gap:14,flexWrap:'wrap'}}>
+                    {c.contactName?<span>👤 {c.contactName}</span>:null}
+                    <span>{c.subjectBeds||0}bd / {c.subjectBaths||0}ba / {c.subjectSqft||0} sqft</span>
+                    <span>{(c.comps||[]).length} comps</span>
+                  </div>
+                </div>
+                <div style={{textAlign:'right',minWidth:120}}>
+                  <div style={{fontSize:16,fontWeight:700,color:C.gold,fontFamily:"'DM Sans',sans-serif"}}>{c.recommendedMid?fmtMoneyK(c.recommendedMid):'—'}</div>
+                  {c.recommendedLow&&c.recommendedHigh?(
+                    <div style={{fontSize:10.5,color:C.muted,marginTop:2}}>{fmtMoneyK(c.recommendedLow)} – {fmtMoneyK(c.recommendedHigh)}</div>
+                  ):null}
+                </div>
+                <div style={{display:'flex',alignItems:'center',gap:10}}>
+                  <span style={{padding:'4px 10px',borderRadius:6,background:statusBg,color:statusColor,fontSize:10.5,fontWeight:700,textTransform:'uppercase',letterSpacing:'0.05em'}}>{c.status}</span>
+                  <button onClick={function(e){e.stopPropagation();if(window._sfDownloadCMAPDF)window._sfDownloadCMAPDF(c);}} title="Download PDF" style={{background:'none',border:'none',color:C.gold,cursor:'pointer',padding:4,fontSize:14,lineHeight:1}}>📄</button>
+                  <button onClick={function(e){e.stopPropagation();if(confirm('Delete this CMA?'))onDelete(c.id);}} title="Delete" style={{background:'none',border:'none',color:C.muted,cursor:'pointer',padding:4,fontSize:14,lineHeight:1}}>🗑</button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Subject Property Form ──────────────────────────
+function SubjectForm({cma,onChange,contacts}){
+  var C=CMA_C;
+  function set(k,v){onChange(Object.assign({},cma,{[k]:v}));}
+
+  var inputStyle={width:'100%',padding:'10px 12px',background:C.bg2,border:'1px solid '+C.border,borderRadius:8,color:C.white,fontSize:13,fontFamily:"'DM Sans',sans-serif",boxSizing:'border-box'};
+  var labelStyle={fontSize:11,color:C.muted,fontWeight:600,textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:6,display:'block'};
+
+  return (
+    <div style={{padding:20,background:C.card,borderRadius:12,border:'1px solid '+C.border,marginBottom:18}}>
+      <div style={{fontSize:13,fontWeight:700,color:C.gold,textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:16}}>Subject Property</div>
+
+      <div style={{marginBottom:14}}>
+        <label style={labelStyle}>Property Address *</label>
+        <input value={cma.subjectAddress||''} onChange={function(e){set('subjectAddress',e.target.value);}} placeholder="e.g. 42 Maple Ridge Cres, Brampton, ON" style={inputStyle}/>
+      </div>
+
+      <div style={{marginBottom:14}}>
+        <label style={labelStyle}>Linked Contact (optional)</label>
+        <select value={cma.contactId||''} onChange={function(e){
+          var id=e.target.value;
+          var c=(contacts||[]).find(function(x){return String(x.id)===String(id);});
+          onChange(Object.assign({},cma,{contactId:id||null,contactName:c?((c.firstName||'')+' '+(c.lastName||'')).trim():''}));
+        }} style={inputStyle}>
+          <option value="">— None —</option>
+          {(contacts||[]).map(function(c){var n=((c.firstName||'')+' '+(c.lastName||'')).trim();return <option key={c.id} value={c.id}>{n}{c.address?' — '+c.address:''}</option>;})}
+        </select>
+      </div>
+
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(120px,1fr))',gap:12,marginBottom:14}}>
+        <div>
+          <label style={labelStyle}>Beds</label>
+          <input type="number" min="0" value={cma.subjectBeds||0} onChange={function(e){set('subjectBeds',parseFloat(e.target.value)||0);}} style={inputStyle}/>
+        </div>
+        <div>
+          <label style={labelStyle}>Baths</label>
+          <input type="number" min="0" step="0.5" value={cma.subjectBaths||0} onChange={function(e){set('subjectBaths',parseFloat(e.target.value)||0);}} style={inputStyle}/>
+        </div>
+        <div>
+          <label style={labelStyle}>Sqft (interior)</label>
+          <input type="number" min="0" value={cma.subjectSqft||0} onChange={function(e){set('subjectSqft',parseFloat(e.target.value)||0);}} style={inputStyle}/>
+        </div>
+        <div>
+          <label style={labelStyle}>Lot (sqft)</label>
+          <input type="number" min="0" value={cma.subjectLot||0} onChange={function(e){set('subjectLot',parseFloat(e.target.value)||0);}} style={inputStyle}/>
+        </div>
+        <div>
+          <label style={labelStyle}>Year built</label>
+          <input type="number" min="1800" max="2099" value={cma.subjectYear||''} onChange={function(e){set('subjectYear',parseInt(e.target.value)||null);}} style={inputStyle}/>
+        </div>
+      </div>
+
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:14}}>
+        <div>
+          <label style={labelStyle}>Type</label>
+          <select value={cma.subjectType||'detached'} onChange={function(e){set('subjectType',e.target.value);}} style={inputStyle}>
+            <option value="detached">Detached</option>
+            <option value="semi">Semi-Detached</option>
+            <option value="townhouse">Townhouse</option>
+            <option value="condo">Condo</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label style={labelStyle}>Condition</label>
+          <select value={cma.subjectCondition||'good'} onChange={function(e){set('subjectCondition',e.target.value);}} style={inputStyle}>
+            <option value="excellent">Excellent (renovated)</option>
+            <option value="good">Good (move-in)</option>
+            <option value="fair">Fair (dated)</option>
+            <option value="poor">Poor (needs work)</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label style={labelStyle}>Notable features</label>
+        <textarea value={cma.subjectFeatures||''} onChange={function(e){set('subjectFeatures',e.target.value);}} placeholder="Finished basement, 2-car garage, ravine lot, recent reno…" rows={2} style={Object.assign({},inputStyle,{resize:'vertical',minHeight:60,fontFamily:"'DM Sans',sans-serif"})}/>
+      </div>
+    </div>
+  );
+}
+
+// ── Comp Card ──────────────────────────────────────
+function CompCard({comp,index,onChange,onDelete,subj,cma}){
+  var C=CMA_C;
+  function set(k,v){onChange(Object.assign({},comp,{[k]:v}));}
+  var inputStyle={width:'100%',padding:'8px 10px',background:C.bg,border:'1px solid '+C.border,borderRadius:6,color:C.white,fontSize:12,fontFamily:"'DM Sans',sans-serif",boxSizing:'border-box'};
+  var lblStyle={fontSize:10,color:C.muted,fontWeight:600,textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:4,display:'block'};
+
+  // live computed adjustment for display
+  var live=calcAdjustedComp(comp,subj,cma);
+
+  return (
+    <div style={{padding:16,background:C.bg2,borderRadius:10,border:'1px solid '+C.border,marginBottom:10}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
+        <div style={{fontSize:11,fontWeight:700,color:C.teal,textTransform:'uppercase',letterSpacing:'0.08em'}}>Comp #{index+1}</div>
+        <button onClick={onDelete} style={{background:'none',border:'none',color:C.muted,cursor:'pointer',fontSize:12}}>Remove ×</button>
+      </div>
+
+      <div style={{marginBottom:10}}>
+        <label style={lblStyle}>Address</label>
+        <input value={comp.address||''} onChange={function(e){set('address',e.target.value);}} placeholder="e.g. 38 Maple Ridge Cres" style={inputStyle}/>
+      </div>
+
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:10}}>
+        <div>
+          <label style={lblStyle}>Sold Price</label>
+          <input type="number" min="0" value={comp.soldPrice||0} onChange={function(e){set('soldPrice',parseFloat(e.target.value)||0);}} style={inputStyle}/>
+        </div>
+        <div>
+          <label style={lblStyle}>Sold Date</label>
+          <input type="date" value={comp.soldDate||''} onChange={function(e){set('soldDate',e.target.value);}} style={inputStyle}/>
+        </div>
+      </div>
+
+      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:10,marginBottom:10}}>
+        <div>
+          <label style={lblStyle}>Beds</label>
+          <input type="number" min="0" value={comp.beds||0} onChange={function(e){set('beds',parseFloat(e.target.value)||0);}} style={inputStyle}/>
+        </div>
+        <div>
+          <label style={lblStyle}>Baths</label>
+          <input type="number" min="0" step="0.5" value={comp.baths||0} onChange={function(e){set('baths',parseFloat(e.target.value)||0);}} style={inputStyle}/>
+        </div>
+        <div>
+          <label style={lblStyle}>Sqft</label>
+          <input type="number" min="0" value={comp.sqft||0} onChange={function(e){set('sqft',parseFloat(e.target.value)||0);}} style={inputStyle}/>
+        </div>
+        <div>
+          <label style={lblStyle}>Year</label>
+          <input type="number" value={comp.year||''} onChange={function(e){set('year',parseInt(e.target.value)||null);}} style={inputStyle}/>
+        </div>
+      </div>
+
+      <div style={{display:'grid',gridTemplateColumns:'1fr 2fr',gap:10,marginBottom:12}}>
+        <div>
+          <label style={lblStyle}>Condition</label>
+          <select value={comp.condition||'good'} onChange={function(e){set('condition',e.target.value);}} style={inputStyle}>
+            <option value="excellent">Excellent</option>
+            <option value="good">Good</option>
+            <option value="fair">Fair</option>
+            <option value="poor">Poor</option>
+          </select>
+        </div>
+        <div>
+          <label style={lblStyle}>Notes</label>
+          <input value={comp.notes||''} onChange={function(e){set('notes',e.target.value);}} placeholder="e.g. backs onto park, finished bsmt" style={inputStyle}/>
+        </div>
+      </div>
+
+      {/* Adjustment breakdown */}
+      <div style={{marginTop:12,padding:'10px 12px',background:'rgba(212,168,67,0.06)',borderRadius:8,border:'1px solid rgba(212,168,67,0.18)'}}>
+        <div style={{display:'flex',justifyContent:'space-between',fontSize:10.5,color:C.muted,marginBottom:6,fontWeight:600,textTransform:'uppercase',letterSpacing:'0.05em'}}>
+          <span>Adjustments</span>
+          <span style={{color:C.gold}}>Adj. Price</span>
+        </div>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'4px 16px',fontSize:11.5,color:C.white,marginBottom:8}}>
+          <div style={{display:'flex',justifyContent:'space-between'}}><span style={{color:C.muted}}>Sqft:</span><span style={{color:live.sqftAdj>=0?C.green:C.red}}>{live.sqftAdj>=0?'+':''}{fmtMoney(live.sqftAdj)}</span></div>
+          <div style={{display:'flex',justifyContent:'space-between'}}><span style={{color:C.muted}}>Beds:</span><span style={{color:live.bedAdj>=0?C.green:C.red}}>{live.bedAdj>=0?'+':''}{fmtMoney(live.bedAdj)}</span></div>
+          <div style={{display:'flex',justifyContent:'space-between'}}><span style={{color:C.muted}}>Baths:</span><span style={{color:live.bathAdj>=0?C.green:C.red}}>{live.bathAdj>=0?'+':''}{fmtMoney(live.bathAdj)}</span></div>
+          <div style={{display:'flex',justifyContent:'space-between'}}><span style={{color:C.muted}}>Condition:</span><span style={{color:live.conditionAdj>=0?C.green:C.red}}>{live.conditionAdj>=0?'+':''}{fmtMoney(live.conditionAdj)}</span></div>
+        </div>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',paddingTop:8,borderTop:'1px solid rgba(212,168,67,0.18)'}}>
+          <span style={{fontSize:11,color:C.muted}}>Sold {fmtMoney(comp.soldPrice)} → adjusted</span>
+          <span style={{fontSize:15,fontWeight:700,color:C.gold}}>{fmtMoney(live.adjustedPrice)}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Adjustments Panel ──────────────────────────────
+function AdjustmentsPanel({cma,onChange}){
+  var C=CMA_C;
+  function set(k,v){onChange(Object.assign({},cma,{[k]:v}));}
+  var inputStyle={width:'100%',padding:'8px 10px',background:C.bg2,border:'1px solid '+C.border,borderRadius:6,color:C.white,fontSize:12,fontFamily:"'DM Sans',sans-serif",boxSizing:'border-box'};
+  var lblStyle={fontSize:10,color:C.muted,fontWeight:600,textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:4,display:'block'};
+
+  return (
+    <div style={{padding:16,background:C.card,borderRadius:12,border:'1px solid '+C.border,marginBottom:18}}>
+      <div style={{fontSize:12,fontWeight:700,color:C.gold,textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:4}}>Adjustment Settings</div>
+      <div style={{fontSize:11,color:C.muted,marginBottom:14}}>How much to add/subtract per unit difference between subject and each comp.</div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:12}}>
+        <div>
+          <label style={lblStyle}>$ per sqft</label>
+          <input type="number" min="0" value={cma.adjPerSqft||200} onChange={function(e){set('adjPerSqft',parseFloat(e.target.value)||0);}} style={inputStyle}/>
+        </div>
+        <div>
+          <label style={lblStyle}>$ per bedroom</label>
+          <input type="number" min="0" value={cma.adjPerBed||8000} onChange={function(e){set('adjPerBed',parseFloat(e.target.value)||0);}} style={inputStyle}/>
+        </div>
+        <div>
+          <label style={lblStyle}>$ per bathroom</label>
+          <input type="number" min="0" value={cma.adjPerBath||5000} onChange={function(e){set('adjPerBath',parseFloat(e.target.value)||0);}} style={inputStyle}/>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Price Recommendation ───────────────────────────
+function PriceRecommendation({cma}){
+  var C=CMA_C;
+  var hasComps=(cma.comps||[]).length>0;
+  return (
+    <div style={{padding:'24px 22px',background:'linear-gradient(135deg, rgba(212,168,67,0.12), rgba(15,160,160,0.08))',borderRadius:14,border:'1px solid rgba(212,168,67,0.3)',marginBottom:18}}>
+      <div style={{fontSize:11,fontWeight:700,color:C.gold,textTransform:'uppercase',letterSpacing:'0.1em',marginBottom:12}}>Recommended Price</div>
+      {hasComps?(
+        <React.Fragment>
+          <div style={{display:'flex',alignItems:'baseline',gap:14,flexWrap:'wrap',marginBottom:12}}>
+            <div>
+              <div style={{fontSize:11,color:C.muted,marginBottom:2}}>Low</div>
+              <div style={{fontSize:18,fontWeight:600,color:C.white}}>{fmtMoneyK(cma.recommendedLow)}</div>
+            </div>
+            <div style={{fontSize:32,color:C.muted,fontWeight:200}}>—</div>
+            <div style={{textAlign:'center',padding:'0 12px'}}>
+              <div style={{fontSize:11,color:C.gold,marginBottom:2,fontWeight:700}}>RECOMMENDED</div>
+              <div style={{fontSize:32,fontWeight:800,color:C.gold,fontFamily:"'DM Sans',sans-serif",letterSpacing:'-0.02em'}}>{fmtMoney(cma.recommendedMid)}</div>
+            </div>
+            <div style={{fontSize:32,color:C.muted,fontWeight:200}}>—</div>
+            <div>
+              <div style={{fontSize:11,color:C.muted,marginBottom:2}}>High</div>
+              <div style={{fontSize:18,fontWeight:600,color:C.white}}>{fmtMoneyK(cma.recommendedHigh)}</div>
+            </div>
+          </div>
+          <div style={{fontSize:11.5,color:C.muted}}>Based on {cma.comps.length} adjusted comp{cma.comps.length===1?'':'s'} • Range reflects market spread</div>
+        </React.Fragment>
+      ):(
+        <div style={{padding:'20px 0',color:C.muted,fontSize:13}}>Add comparable sales below to generate a price recommendation.</div>
+      )}
+    </div>
+  );
+}
+
+// ── CMA Builder (the editor) ───────────────────────
+function CMABuilder({initialCMA,contacts,onSave,onClose,onSend}){
+  var C=CMA_C;
+  var [cma,setCMA]=React.useState(initialCMA);
+  var [dirty,setDirty]=React.useState(false);
+
+  function update(next){
+    var recomputed=recomputeCMA(next);
+    setCMA(recomputed);
+    setDirty(true);
+  }
+
+  function addComp(){
+    update(Object.assign({},cma,{comps:[...(cma.comps||[]),makeBlankComp()]}));
+  }
+
+  function updateComp(i,next){
+    var newComps=cma.comps.slice();
+    newComps[i]=next;
+    update(Object.assign({},cma,{comps:newComps}));
+  }
+
+  function deleteComp(i){
+    var newComps=cma.comps.slice();
+    newComps.splice(i,1);
+    update(Object.assign({},cma,{comps:newComps}));
+  }
+
+  function handleSave(){
+    onSave(cma);
+    setDirty(false);
+    if(window._sfShowToast)window._sfShowToast('CMA saved','success');
+  }
+
+  function handleDownloadPDF(){
+    if(!cma.subjectAddress){if(window._sfShowToast)window._sfShowToast('Add a subject address first','warning');return;}
+    if((cma.comps||[]).length===0){if(window._sfShowToast)window._sfShowToast('Add at least one comp first','warning');return;}
+    // Save first so dirty changes are persisted before PDF
+    if(dirty){onSave(cma);setDirty(false);}
+    if(window._sfDownloadCMAPDF)window._sfDownloadCMAPDF(cma);
+  }
+
+  function handleSend(){
+    if(!cma.subjectAddress){if(window._sfShowToast)window._sfShowToast('Add a subject address first','warning');return;}
+    if((cma.comps||[]).length===0){if(window._sfShowToast)window._sfShowToast('Add at least one comp first','warning');return;}
+    onSend(cma);
+    setDirty(false);
+  }
+
+  return (
+    <div style={{padding:'20px 28px',maxWidth:1100,margin:'0 auto'}}>
+      {/* Header */}
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:20,flexWrap:'wrap',gap:12}}>
+        <div style={{display:'flex',alignItems:'center',gap:14}}>
+          <button onClick={onClose} style={{background:'none',border:'1px solid '+C.border,color:C.muted,padding:'8px 14px',borderRadius:8,cursor:'pointer',fontSize:12,fontFamily:"'DM Sans',sans-serif"}}>← Back</button>
+          <div>
+            <div style={{fontSize:18,fontWeight:700,color:C.white}}>{cma.subjectAddress||'New CMA'}</div>
+            <div style={{fontSize:11,color:C.muted}}>Last saved {fmtDate(cma.updatedAt)} {dirty?<span style={{color:C.amber}}>• Unsaved changes</span>:null}</div>
+          </div>
+        </div>
+        <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+          <button onClick={handleSave} style={{padding:'10px 18px',borderRadius:8,background:'transparent',border:'1px solid '+C.teal,color:C.teal,fontSize:12.5,fontWeight:600,cursor:'pointer',fontFamily:"'DM Sans',sans-serif"}}>Save Draft</button>
+          <button onClick={handleDownloadPDF} disabled={!cma.subjectAddress||(cma.comps||[]).length===0} style={{padding:'10px 18px',borderRadius:8,background:'transparent',border:'1px solid '+C.gold,color:C.gold,fontSize:12.5,fontWeight:600,cursor:(!cma.subjectAddress||(cma.comps||[]).length===0)?'not-allowed':'pointer',opacity:(!cma.subjectAddress||(cma.comps||[]).length===0)?0.5:1,fontFamily:"'DM Sans',sans-serif"}}>📄 Download PDF</button>
+          <button onClick={handleSend} disabled={!cma.subjectAddress||(cma.comps||[]).length===0} style={{padding:'10px 18px',borderRadius:8,background:C.gold,border:'none',color:'#081828',fontSize:12.5,fontWeight:700,cursor:(!cma.subjectAddress||(cma.comps||[]).length===0)?'not-allowed':'pointer',opacity:(!cma.subjectAddress||(cma.comps||[]).length===0)?0.5:1,fontFamily:"'DM Sans',sans-serif"}}>✉ Send via Email</button>
+        </div>
+      </div>
+
+      <PriceRecommendation cma={cma}/>
+      <SubjectForm cma={cma} onChange={update} contacts={contacts}/>
+      <AdjustmentsPanel cma={cma} onChange={update}/>
+
+      <div style={{padding:'18px 20px 20px',background:C.card,borderRadius:12,border:'1px solid '+C.border,marginBottom:20}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16,flexWrap:'wrap',gap:8}}>
+          <div>
+            <div style={{fontSize:13,fontWeight:700,color:C.gold,textTransform:'uppercase',letterSpacing:'0.08em'}}>Comparable Sales</div>
+            <div style={{fontSize:11,color:C.muted,marginTop:3}}>{(cma.comps||[]).length} comp{(cma.comps||[]).length===1?'':'s'} added • Aim for 3–5 recent nearby sales</div>
+          </div>
+          <button onClick={addComp} style={{padding:'8px 14px',borderRadius:8,background:C.teal+'1F',border:'1px solid '+C.teal+'60',color:C.teal,fontSize:12,fontWeight:600,cursor:'pointer',fontFamily:"'DM Sans',sans-serif"}}>+ Add Comp</button>
+        </div>
+
+        {(cma.comps||[]).length===0?(
+          <div style={{padding:'40px 20px',textAlign:'center',background:C.bg2,borderRadius:10,border:'1px dashed '+C.border}}>
+            <div style={{fontSize:13,color:C.muted,marginBottom:14}}>No comps yet. Add 3–5 comparable sales from the past 3–6 months.</div>
+            <button onClick={addComp} style={{padding:'9px 18px',borderRadius:8,background:C.teal,border:'none',color:'#fff',fontSize:12.5,fontWeight:600,cursor:'pointer',fontFamily:"'DM Sans',sans-serif"}}>+ Add First Comp</button>
+          </div>
+        ):(
+          <div>
+            {(cma.comps||[]).map(function(c,i){
+              return <CompCard key={c.id} comp={c} index={i} subj={cma} cma={cma} onChange={function(next){updateComp(i,next);}} onDelete={function(){deleteComp(i);}}/>;
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Future-feature stubs */}
+      <div style={{padding:16,background:C.card,borderRadius:12,border:'1px dashed '+C.border,marginBottom:16,opacity:0.7}}>
+        <div style={{fontSize:11,fontWeight:700,color:C.muted,textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:8}}>Coming next</div>
+        <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>
+          <span style={{padding:'6px 12px',background:C.bg2,borderRadius:6,fontSize:11,color:C.muted,border:'1px solid '+C.border}}>🌐 Public valuation page (Phase 3)</span>
+          <span style={{padding:'6px 12px',background:C.bg2,borderRadius:6,fontSize:11,color:C.muted,border:'1px solid '+C.border}}>🔗 MLS sync (Phase 4)</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+// ── Phase 3: Valuation Leads List ────────────────────────
+function ValuationLeadsList({leads, onConvert, onDelete, onMarkContacted, config, onEditPage}){
+  var C=CMA_C;
+  var [filter,setFilter]=React.useState('all');
+  var filtered=leads.filter(function(l){
+    if(filter==='all')return true;
+    return l.status===filter;
+  }).sort(function(a,b){return new Date(b.createdAt||0)-new Date(a.createdAt||0);});
+
+  var counts={all:leads.length,new:0,contacted:0,cma_sent:0,converted:0,dead:0};
+  leads.forEach(function(l){if(counts[l.status]!==undefined)counts[l.status]++;});
+
+  var publicUrl='sphereflow-valuation.html?agent='+encodeURIComponent((config&&config.slug)||'');
+
+  return (
+    <div>
+      {/* Public page status banner */}
+      <div style={{padding:'14px 18px',background:(config&&config.enabled?'rgba(46,204,113,0.08)':'rgba(243,156,18,0.08)'),border:'1px solid '+(config&&config.enabled?'rgba(46,204,113,0.25)':'rgba(243,156,18,0.25)'),borderRadius:10,marginBottom:18,display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:10}}>
+        <div style={{display:'flex',alignItems:'center',gap:10}}>
+          <div style={{width:8,height:8,borderRadius:'50%',background:config&&config.enabled?C.green:C.amber}}></div>
+          <div>
+            <div style={{fontSize:12.5,fontWeight:600,color:C.white}}>
+              {config&&config.enabled?'Your public valuation page is live':'Public valuation page disabled'}
+            </div>
+            {config&&config.slug?(
+              <div style={{fontSize:11,color:C.muted,marginTop:2,fontFamily:'monospace'}}>{publicUrl}</div>
+            ):(
+              <div style={{fontSize:11,color:C.muted,marginTop:2}}>Set it up in the "Public Page" tab to start capturing leads</div>
+            )}
+          </div>
+        </div>
+        <div style={{display:'flex',gap:8}}>
+          {config&&config.slug?(
+            <button onClick={function(){navigator.clipboard&&navigator.clipboard.writeText(publicUrl);if(window._sfShowToast)window._sfShowToast('URL copied','success');}} style={{padding:'7px 14px',borderRadius:7,background:'transparent',border:'1px solid '+C.border,color:C.muted,fontSize:11.5,cursor:'pointer',fontFamily:"'DM Sans',sans-serif"}}>Copy link</button>
+          ):null}
+          <button onClick={onEditPage} style={{padding:'7px 14px',borderRadius:7,background:C.teal,border:'none',color:'#fff',fontSize:11.5,fontWeight:600,cursor:'pointer',fontFamily:"'DM Sans',sans-serif"}}>{config&&config.slug?'Edit page':'Set up page →'}</button>
+        </div>
+      </div>
+
+      {/* Filter tabs */}
+      <div style={{display:'flex',gap:6,marginBottom:18,borderBottom:'1px solid '+C.border,overflowX:'auto'}}>
+        {[{k:'all',l:'All'},{k:'new',l:'New'},{k:'contacted',l:'Contacted'},{k:'cma_sent',l:'CMA Sent'},{k:'converted',l:'Converted'},{k:'dead',l:'Dead'}].map(function(t){
+          var active=filter===t.k;
+          return (
+            <button key={t.k} onClick={function(){setFilter(t.k);}} style={{padding:'10px 14px',background:'none',border:'none',borderBottom:'2px solid '+(active?C.teal:'transparent'),color:active?C.teal:C.muted,fontSize:12,fontWeight:active?700:500,cursor:'pointer',fontFamily:"'DM Sans',sans-serif",whiteSpace:'nowrap'}}>
+              {t.l} <span style={{opacity:0.6,marginLeft:4}}>{counts[t.k]||0}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {filtered.length===0?(
+        <div style={{padding:'60px 20px',textAlign:'center',background:C.card,borderRadius:12,border:'1px dashed '+C.border}}>
+          <div style={{fontSize:40,marginBottom:14,opacity:0.4}}>🌐</div>
+          <div style={{fontSize:15,fontWeight:600,color:C.white,marginBottom:6}}>No valuation leads yet</div>
+          <div style={{fontSize:12.5,color:C.muted,maxWidth:420,margin:'0 auto'}}>When visitors request a home valuation on your public page, their requests will show up here. Set up your page and share the link.</div>
+        </div>
+      ):(
+        <div style={{display:'grid',gap:10}}>
+          {filtered.map(function(l){
+            var statusColor={new:C.teal,contacted:C.amber,cma_sent:C.gold,converted:C.green,dead:C.red}[l.status]||C.muted;
+            var statusBg={new:'rgba(15,160,160,0.12)',contacted:'rgba(243,156,18,0.12)',cma_sent:'rgba(212,168,67,0.15)',converted:'rgba(46,204,113,0.15)',dead:'rgba(231,76,60,0.12)'}[l.status]||'rgba(107,139,164,0.12)';
+            var statusLabel={new:'NEW',contacted:'CONTACTED',cma_sent:'CMA SENT',converted:'CONVERTED',dead:'DEAD'}[l.status]||l.status;
+            return (
+              <div key={l.id} style={{padding:16,background:C.card,borderRadius:12,border:'1px solid '+C.border}}>
+                <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:10,flexWrap:'wrap',gap:10}}>
+                  <div style={{flex:'1 1 260px',minWidth:0}}>
+                    <div style={{fontSize:14,fontWeight:700,color:C.white,marginBottom:3}}>{l.name||'(no name provided)'}</div>
+                    <div style={{fontSize:12,color:C.muted,marginBottom:2}}>{l.address||'—'}</div>
+                    <div style={{fontSize:11,color:C.muted}}>{(l.beds||0)}bd • {(l.baths||0)}ba • {(l.sqft||0).toLocaleString()} sqft • {l.propertyType||'—'} • {l.condition||'—'}</div>
+                  </div>
+                  <div style={{textAlign:'right'}}>
+                    <div style={{fontSize:10.5,color:C.muted,marginBottom:2}}>Instant estimate shown</div>
+                    <div style={{fontSize:15,fontWeight:700,color:C.gold}}>{l.instantEstimateMid?'$'+Math.round(l.instantEstimateMid/1000)+'K':'—'}</div>
+                    {l.instantEstimateLow&&l.instantEstimateHigh?(
+                      <div style={{fontSize:10,color:C.muted,marginTop:2}}>${Math.round(l.instantEstimateLow/1000)}K – ${Math.round(l.instantEstimateHigh/1000)}K</div>
+                    ):null}
+                  </div>
+                </div>
+
+                <div style={{display:'flex',gap:12,flexWrap:'wrap',fontSize:11.5,color:C.muted,marginBottom:12,paddingTop:10,borderTop:'1px solid '+C.border}}>
+                  {l.email?<span>✉ <a href={'mailto:'+l.email} style={{color:C.teal,textDecoration:'none'}}>{l.email}</a></span>:null}
+                  {l.phone?<span>📞 <a href={'tel:'+l.phone} style={{color:C.teal,textDecoration:'none'}}>{l.phone}</a></span>:null}
+                  <span style={{marginLeft:'auto'}}>Submitted {l.createdAt?new Date(l.createdAt).toLocaleDateString():'—'}</span>
+                </div>
+
+                {l.message?(
+                  <div style={{padding:'10px 12px',background:C.bg2,borderRadius:8,fontSize:12,color:C.white,marginBottom:12,lineHeight:1.5}}>
+                    "{l.message}"
+                  </div>
+                ):null}
+
+                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8}}>
+                  <span style={{padding:'4px 10px',borderRadius:6,background:statusBg,color:statusColor,fontSize:10,fontWeight:700,letterSpacing:'0.05em'}}>{statusLabel}</span>
+                  <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+                    {l.status==='new'?(
+                      <button onClick={function(){onMarkContacted(l.id);}} style={{padding:'7px 12px',borderRadius:7,background:'transparent',border:'1px solid '+C.teal,color:C.teal,fontSize:11.5,fontWeight:600,cursor:'pointer',fontFamily:"'DM Sans',sans-serif"}}>Mark Contacted</button>
+                    ):null}
+                    <button onClick={function(){onConvert(l);}} disabled={l.status==='converted'} style={{padding:'7px 14px',borderRadius:7,background:l.status==='converted'?'transparent':C.gold,border:l.status==='converted'?'1px solid '+C.border:'none',color:l.status==='converted'?C.muted:'#081828',fontSize:11.5,fontWeight:700,cursor:l.status==='converted'?'default':'pointer',fontFamily:"'DM Sans',sans-serif"}}>{l.status==='converted'?'✓ Converted':'Convert → CMA'}</button>
+                    <button onClick={function(){if(confirm('Delete this lead?'))onDelete(l.id);}} style={{padding:'7px 10px',borderRadius:7,background:'transparent',border:'1px solid '+C.border,color:C.muted,fontSize:11.5,cursor:'pointer',fontFamily:"'DM Sans',sans-serif"}}>🗑</button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Phase 3: Valuation Page Editor ─────────────────────
+function ValuationPageEditor({config, onSave, onBack}){
+  var C=CMA_C;
+  var [cfg,setCfg]=React.useState(config||{
+    slug:(window._sfDefaultValuationSlug?window._sfDefaultValuationSlug():''),
+    enabled:true,
+    headline:"Curious what your home is worth?",
+    subheadline:"Get an instant estimate — then I'll prepare a detailed CMA just for you.",
+    heroImageUrl:'',
+    agentPhotoUrl:'',
+    marketArea:'Brampton, ON',
+    ctaButtonText:"Get My Home's Value",
+    testimonial:''
+  });
+  var [dirty,setDirty]=React.useState(false);
+
+  function set(k,v){ setCfg(Object.assign({},cfg,{[k]:v})); setDirty(true); }
+
+  function save(){
+    // Sanitize slug
+    var clean=(cfg.slug||'').toLowerCase().replace(/[^a-z0-9-]/g,'-').replace(/-+/g,'-').replace(/(^-|-$)/g,'');
+    if(!clean){if(window._sfShowToast)window._sfShowToast('Slug is required','warning');return;}
+    var next=Object.assign({},cfg,{slug:clean});
+    onSave(next);
+    setDirty(false);
+  }
+
+  var publicUrl='sphereflow-valuation.html?agent='+encodeURIComponent(cfg.slug||'');
+  var inputStyle={width:'100%',padding:'10px 12px',background:C.bg2,border:'1px solid '+C.border,borderRadius:8,color:C.white,fontSize:13,fontFamily:"'DM Sans',sans-serif",boxSizing:'border-box'};
+  var lblStyle={fontSize:11,color:C.muted,fontWeight:600,textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:6,display:'block'};
+
+  return (
+    <div>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:20,flexWrap:'wrap',gap:12}}>
+        <div style={{display:'flex',alignItems:'center',gap:14}}>
+          <button onClick={onBack} style={{background:'none',border:'1px solid '+C.border,color:C.muted,padding:'8px 14px',borderRadius:8,cursor:'pointer',fontSize:12,fontFamily:"'DM Sans',sans-serif"}}>← Back</button>
+          <div>
+            <div style={{fontSize:18,fontWeight:700,color:C.white}}>Public Valuation Page</div>
+            <div style={{fontSize:11,color:C.muted}}>The page homeowners see when you share your valuation link</div>
+          </div>
+        </div>
+        <div style={{display:'flex',gap:8}}>
+          {cfg.slug?(
+            <a href={publicUrl} target="_blank" rel="noopener" style={{padding:'10px 16px',borderRadius:8,background:'transparent',border:'1px solid '+C.teal,color:C.teal,fontSize:12.5,fontWeight:600,textDecoration:'none',fontFamily:"'DM Sans',sans-serif",display:'inline-block'}}>Preview →</a>
+          ):null}
+          <button onClick={save} disabled={!dirty} style={{padding:'10px 18px',borderRadius:8,background:dirty?C.gold:'transparent',border:dirty?'none':'1px solid '+C.border,color:dirty?'#081828':C.muted,fontSize:12.5,fontWeight:700,cursor:dirty?'pointer':'default',fontFamily:"'DM Sans',sans-serif"}}>{dirty?'Save Changes':'Saved'}</button>
+        </div>
+      </div>
+
+      <div style={{display:'grid',gridTemplateColumns:'1fr',gap:18,maxWidth:720}}>
+        {/* Enable toggle */}
+        <div style={{padding:16,background:C.card,borderRadius:12,border:'1px solid '+C.border,display:'flex',justifyContent:'space-between',alignItems:'center',gap:12}}>
+          <div>
+            <div style={{fontSize:13,fontWeight:600,color:C.white,marginBottom:3}}>Page enabled</div>
+            <div style={{fontSize:11.5,color:C.muted}}>When off, the public URL shows a "temporarily unavailable" message</div>
+          </div>
+          <label style={{position:'relative',display:'inline-block',width:44,height:24,cursor:'pointer'}}>
+            <input type="checkbox" checked={!!cfg.enabled} onChange={function(e){set('enabled',e.target.checked);}} style={{opacity:0,width:0,height:0}}/>
+            <span style={{position:'absolute',inset:0,background:cfg.enabled?C.teal:C.border,borderRadius:24,transition:'0.2s'}}></span>
+            <span style={{position:'absolute',left:cfg.enabled?22:2,top:2,width:20,height:20,background:'#fff',borderRadius:'50%',transition:'0.2s'}}></span>
+          </label>
+        </div>
+
+        {/* URL slug */}
+        <div style={{padding:16,background:C.card,borderRadius:12,border:'1px solid '+C.border}}>
+          <label style={lblStyle}>Your public URL slug</label>
+          <div style={{display:'flex',alignItems:'center',gap:8}}>
+            <span style={{fontSize:12,color:C.muted,fontFamily:'monospace'}}>sphereflow-valuation.html?agent=</span>
+            <input value={cfg.slug||''} onChange={function(e){set('slug',e.target.value);}} placeholder="jag-singh" style={Object.assign({},inputStyle,{maxWidth:220,fontFamily:'monospace'})}/>
+          </div>
+          <div style={{fontSize:11,color:C.muted,marginTop:8}}>Lowercase letters, numbers, and dashes only. Share this link anywhere: social bios, email signature, business cards.</div>
+        </div>
+
+        {/* Headline + subheadline */}
+        <div style={{padding:16,background:C.card,borderRadius:12,border:'1px solid '+C.border}}>
+          <label style={lblStyle}>Headline</label>
+          <input value={cfg.headline||''} onChange={function(e){set('headline',e.target.value);}} placeholder="Curious what your home is worth?" style={inputStyle}/>
+          <label style={Object.assign({},lblStyle,{marginTop:14})}>Subheadline</label>
+          <input value={cfg.subheadline||''} onChange={function(e){set('subheadline',e.target.value);}} placeholder="Get an instant estimate..." style={inputStyle}/>
+          <label style={Object.assign({},lblStyle,{marginTop:14})}>CTA button text</label>
+          <input value={cfg.ctaButtonText||''} onChange={function(e){set('ctaButtonText',e.target.value);}} placeholder="Get My Home's Value" style={inputStyle}/>
+        </div>
+
+        {/* Market area */}
+        <div style={{padding:16,background:C.card,borderRadius:12,border:'1px solid '+C.border}}>
+          <label style={lblStyle}>Market area</label>
+          <select value={cfg.marketArea||'Brampton, ON'} onChange={function(e){set('marketArea',e.target.value);}} style={inputStyle}>
+            <option value="Brampton, ON">Brampton, ON</option>
+            <option value="Mississauga, ON">Mississauga, ON</option>
+            <option value="Toronto, ON">Toronto, ON</option>
+            <option value="Vaughan, ON">Vaughan, ON</option>
+            <option value="Markham, ON">Markham, ON</option>
+            <option value="Richmond Hill, ON">Richmond Hill, ON</option>
+            <option value="Oakville, ON">Oakville, ON</option>
+            <option value="Burlington, ON">Burlington, ON</option>
+            <option value="GTA">Greater Toronto Area</option>
+          </select>
+          <div style={{fontSize:11,color:C.muted,marginTop:8}}>Used for neighborhood context in the estimate explanation.</div>
+        </div>
+
+        {/* Hero & photo URLs */}
+        <div style={{padding:16,background:C.card,borderRadius:12,border:'1px solid '+C.border}}>
+          <label style={lblStyle}>Hero image URL (optional)</label>
+          <input value={cfg.heroImageUrl||''} onChange={function(e){set('heroImageUrl',e.target.value);}} placeholder="https://..." style={inputStyle}/>
+          <label style={Object.assign({},lblStyle,{marginTop:14})}>Your headshot URL (optional)</label>
+          <input value={cfg.agentPhotoUrl||''} onChange={function(e){set('agentPhotoUrl',e.target.value);}} placeholder="https://..." style={inputStyle}/>
+          <div style={{fontSize:11,color:C.muted,marginTop:8}}>Hosted image URLs (e.g., Cloudinary, your website). Leave blank for default styling.</div>
+        </div>
+
+        {/* Testimonial */}
+        <div style={{padding:16,background:C.card,borderRadius:12,border:'1px solid '+C.border}}>
+          <label style={lblStyle}>Featured testimonial (optional)</label>
+          <textarea value={cfg.testimonial||''} onChange={function(e){set('testimonial',e.target.value);}} placeholder="&quot;Jag helped us sell our home $75K over asking in 8 days.&quot; — Sarah & James" rows={3} style={Object.assign({},inputStyle,{resize:'vertical',minHeight:72,fontFamily:"'DM Sans',sans-serif"})}/>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+// ── Top-level CMAManager ───────────────────────────
+function CMAManager(){
+  var C=CMA_C;
+  var [cmas,setCMAs]=React.useState(function(){
+    var loaded=loadCMAs();
+    if(loaded.length===0){
+      var seed=seedDemoCMAs();
+      if(seed.length>0)saveCMAs(seed);
+      return seed;
+    }
+    return loaded;
+  });
+  var [editingId,setEditingId]=React.useState(null);
+  var [contacts,setContacts]=React.useState([]);
+  var [topTab,setTopTab]=React.useState('cmas'); // 'cmas' | 'leads' | 'page'
+  var [pageConfig,setPageConfig]=React.useState(function(){
+    var loaded=window._sfLoadValuationPageConfig?window._sfLoadValuationPageConfig():null;
+    if(!loaded){
+      return {
+        slug:(window._sfDefaultValuationSlug?window._sfDefaultValuationSlug():''),
+        enabled:true,
+        headline:"Curious what your home is worth?",
+        subheadline:"Get an instant estimate — then I'll prepare a detailed CMA just for you.",
+        heroImageUrl:'',
+        agentPhotoUrl:'',
+        marketArea:'Brampton, ON',
+        ctaButtonText:"Get My Home's Value",
+        testimonial:''
+      };
+    }
+    return loaded;
+  });
+  var [valuationLeads,setValuationLeads]=React.useState(function(){
+    var slug=(window._sfLoadValuationPageConfig&&window._sfLoadValuationPageConfig())||null;
+    var s=slug&&slug.slug?slug.slug:(window._sfDefaultValuationSlug?window._sfDefaultValuationSlug():'');
+    return window._sfLoadValuationLeads?window._sfLoadValuationLeads(s):[];
+  });
+
+  // Reload valuation leads when the storage key changes (user may have
+  // refreshed the public page in another tab)
+  React.useEffect(function(){
+    function refreshLeads(){
+      var s=pageConfig&&pageConfig.slug?pageConfig.slug:'';
+      var list=window._sfLoadValuationLeads?window._sfLoadValuationLeads(s):[];
+      setValuationLeads(list);
+    }
+    refreshLeads();
+    var iv=setInterval(refreshLeads,5000);
+    function storageHandler(e){ if(e.key && e.key.indexOf('sf_valuation_leads_')===0) refreshLeads(); }
+    window.addEventListener('storage',storageHandler);
+    return function(){ clearInterval(iv); window.removeEventListener('storage',storageHandler); };
+  },[pageConfig&&pageConfig.slug]);
+
+  React.useEffect(function(){
+    function refreshContacts(){
+      try{
+        var data=window.sfGetData?window.sfGetData('contacts'):null;
+        if(Array.isArray(data))setContacts(data);
+      }catch(e){}
+    }
+    refreshContacts();
+    var iv=setInterval(refreshContacts,2000);
+    return function(){clearInterval(iv);};
+  },[]);
+
+  // Listen for external "build CMA for contact" requests
+  React.useEffect(function(){
+    function handler(ev){
+      var detail=ev.detail||{};
+      var contact=detail.contact;
+      var fresh=makeBlankCMA();
+      if(contact){
+        fresh.contactId=contact.id;
+        fresh.contactName=((contact.firstName||'')+' '+(contact.lastName||'')).trim();
+        fresh.subjectAddress=contact.address||'';
+        if(contact.property){
+          fresh.subjectBeds=contact.property.beds||0;
+          fresh.subjectBaths=contact.property.baths||0;
+          fresh.subjectSqft=contact.property.sqft||0;
+        }
+      }
+      var next=[fresh].concat(cmas);
+      setCMAs(next);
+      saveCMAs(next);
+      setEditingId(fresh.id);
+      setTopTab('cmas');
+    }
+    window.addEventListener('sfBuildCMA',handler);
+    return function(){window.removeEventListener('sfBuildCMA',handler);};
+  },[cmas]);
+
+  function handleNew(){
+    var fresh=makeBlankCMA();
+    var next=[fresh].concat(cmas);
+    setCMAs(next);
+    saveCMAs(next);
+    setEditingId(fresh.id);
+  }
+
+  function handleSaveOne(updated){
+    var next=cmas.map(function(c){return c.id===updated.id?updated:c;});
+    setCMAs(next);
+    saveCMAs(next);
+  }
+
+  function handleSend(updated){
+    // Save current state first
+    var next0=cmas.map(function(c){return c.id===updated.id?updated:c;});
+    setCMAs(next0);
+    saveCMAs(next0);
+
+    // Find linked contact for prefill
+    var linkedContact=null;
+    if(updated.contactId){
+      linkedContact=(contacts||[]).find(function(c){return String(c.id)===String(updated.contactId);})||null;
+    }
+
+    // Open email composer
+    if(window._sfOpenCMAEmailModal){
+      window._sfOpenCMAEmailModal(updated, linkedContact, {
+        onSent: function(emailMeta){
+          var sent=Object.assign({},updated,{status:'sent',sentAt:new Date().toISOString()});
+          var next=cmas.map(function(c){return c.id===sent.id?sent:c;});
+          setCMAs(next);
+          saveCMAs(next);
+          // Log to contact timeline if linked
+          if(sent.contactId&&window.dispatchEvent){
+            try{
+              window.dispatchEvent(new CustomEvent('sfAddInteraction',{detail:{contactId:sent.contactId,interaction:{type:'cma',note:'Sent CMA for '+sent.subjectAddress+' — recommended '+fmtMoney(sent.recommendedMid)+' (to '+(emailMeta&&emailMeta.to?emailMeta.to:'recipient')+')',date:new Date().toISOString()}}}));
+            }catch(e){}
+          }
+          // If this CMA came from a valuation lead, bump that lead's status to cma_sent
+          if(sent.valuationLeadId){
+            var slug=pageConfig&&pageConfig.slug?pageConfig.slug:'';
+            var leads=window._sfLoadValuationLeads?window._sfLoadValuationLeads(slug):[];
+            var updatedLeads=leads.map(function(l){return l.id===sent.valuationLeadId?Object.assign({},l,{status:'cma_sent',convertedCmaId:sent.id}):l;});
+            if(window._sfSaveValuationLeads)window._sfSaveValuationLeads(slug,updatedLeads);
+            setValuationLeads(updatedLeads);
+          }
+          if(window._sfShowToast)window._sfShowToast('CMA sent and logged to timeline','success');
+        }
+      });
+    } else {
+      // Fallback: just mark sent
+      var sent=Object.assign({},updated,{status:'sent',sentAt:new Date().toISOString()});
+      var nextF=cmas.map(function(c){return c.id===sent.id?sent:c;});
+      setCMAs(nextF);
+      saveCMAs(nextF);
+      if(window._sfShowToast)window._sfShowToast('CMA marked as sent','success');
+    }
+  }
+
+  function handleDelete(id){
+    var next=cmas.filter(function(c){return c.id!==id;});
+    setCMAs(next);
+    saveCMAs(next);
+    if(editingId===id)setEditingId(null);
+    if(window._sfShowToast)window._sfShowToast('CMA deleted','info');
+  }
+
+  // ── Valuation lead handlers ──
+  function handleLeadConvert(lead){
+    // 1) Push the lead into contacts (if not already)
+    var contactId=lead.convertedContactId;
+    if(!contactId){
+      var nameParts=(lead.name||'').trim().split(/\s+/);
+      var firstName=nameParts[0]||'(No name)';
+      var lastName=nameParts.slice(1).join(' ')||'';
+      var newContact={
+        firstName:firstName,lastName:lastName,
+        email:lead.email||'',phone:lead.phone||'',
+        address:lead.address||'',
+        source:'Home Valuation',
+        nurtureStatus:'engaged',
+        captureSource:'valuation-page',
+        section:'lead',
+        notes:lead.message?'Submitted valuation request: "'+lead.message+'"':'Submitted valuation request',
+        property:{beds:lead.beds||0,baths:lead.baths||0,sqft:lead.sqft||0,type:lead.propertyType||'detached'},
+        interactions:[{type:'valuation-request',note:'Requested home valuation via public page',date:lead.createdAt||new Date().toISOString()}]
+      };
+      try{
+        if(window.sfAddContact){
+          window.sfAddContact(newContact);
+          // sfAddContact doesn't return id, so re-fetch from global bus
+          setTimeout(function(){
+            var allContacts=window.sfGetData?window.sfGetData('contacts'):[];
+            var match=(allContacts||[]).find(function(c){
+              return c.email===newContact.email&&c.firstName===newContact.firstName;
+            });
+            if(match){ finishLeadConversion(lead,match.id); }
+            else { finishLeadConversion(lead,null); }
+          },500);
+          return;
+        }
+      }catch(e){console.error('Contact creation failed:',e);}
+    }
+    finishLeadConversion(lead,contactId);
+  }
+
+  function finishLeadConversion(lead, contactId){
+    // 2) Create a CMA draft prefilled from lead
+    var fresh=makeBlankCMA();
+    fresh.contactId=contactId;
+    fresh.contactName=lead.name||'';
+    fresh.subjectAddress=lead.address||'';
+    fresh.subjectBeds=lead.beds||0;
+    fresh.subjectBaths=lead.baths||0;
+    fresh.subjectSqft=lead.sqft||0;
+    fresh.subjectType=lead.propertyType||'detached';
+    fresh.subjectCondition=lead.condition||'good';
+    fresh.valuationLeadId=lead.id;
+    var next=[fresh].concat(cmas);
+    setCMAs(next);
+    saveCMAs(next);
+
+    // 3) Mark lead as converted
+    var slug=pageConfig&&pageConfig.slug?pageConfig.slug:'';
+    var updatedLeads=valuationLeads.map(function(l){
+      if(l.id!==lead.id)return l;
+      return Object.assign({},l,{status:'converted',convertedContactId:contactId,convertedCmaId:fresh.id,contactedAt:l.contactedAt||new Date().toISOString()});
+    });
+    if(window._sfSaveValuationLeads)window._sfSaveValuationLeads(slug,updatedLeads);
+    setValuationLeads(updatedLeads);
+
+    // 4) Switch to editor
+    setEditingId(fresh.id);
+    setTopTab('cmas');
+    if(window._sfShowToast)window._sfShowToast('Lead converted → CMA draft created','success');
+  }
+
+  function handleLeadMarkContacted(id){
+    var slug=pageConfig&&pageConfig.slug?pageConfig.slug:'';
+    var updatedLeads=valuationLeads.map(function(l){return l.id===id?Object.assign({},l,{status:'contacted',contactedAt:new Date().toISOString()}):l;});
+    if(window._sfSaveValuationLeads)window._sfSaveValuationLeads(slug,updatedLeads);
+    setValuationLeads(updatedLeads);
+    if(window._sfShowToast)window._sfShowToast('Marked as contacted','success');
+  }
+
+  function handleLeadDelete(id){
+    var slug=pageConfig&&pageConfig.slug?pageConfig.slug:'';
+    var updatedLeads=valuationLeads.filter(function(l){return l.id!==id;});
+    if(window._sfSaveValuationLeads)window._sfSaveValuationLeads(slug,updatedLeads);
+    setValuationLeads(updatedLeads);
+    if(window._sfShowToast)window._sfShowToast('Lead deleted','info');
+  }
+
+  function handlePageSave(newCfg){
+    var oldSlug=pageConfig&&pageConfig.slug;
+    if(window._sfSaveValuationPageConfig)window._sfSaveValuationPageConfig(newCfg);
+    setPageConfig(newCfg);
+    // Migrate leads if slug changed
+    if(oldSlug && oldSlug !== newCfg.slug){
+      var oldLeads=window._sfLoadValuationLeads?window._sfLoadValuationLeads(oldSlug):[];
+      if(oldLeads.length>0 && window._sfSaveValuationLeads){
+        window._sfSaveValuationLeads(newCfg.slug,oldLeads);
+        window._sfSaveValuationLeads(oldSlug,[]);
+      }
+    }
+    if(window._sfShowToast)window._sfShowToast('Public page updated','success');
+  }
+
+  var editing=editingId?cmas.find(function(c){return c.id===editingId;}):null;
+
+  // Tab counts
+  var newLeadsCount=(valuationLeads||[]).filter(function(l){return l.status==='new';}).length;
+
+  return (
+    <div style={{height:'100%',width:'100%',background:C.bg,overflow:'auto',color:C.white,fontFamily:"'DM Sans',sans-serif"}}>
+      {editing?(
+        <CMABuilder
+          initialCMA={editing}
+          contacts={contacts}
+          onSave={handleSaveOne}
+          onSend={handleSend}
+          onClose={function(){setEditingId(null);}}
+        />
+      ):(
+        <div style={{padding:'24px 28px 0',maxWidth:1200,margin:'0 auto'}}>
+          {/* Top-level tabs */}
+          <div style={{display:'flex',gap:4,marginBottom:20,borderBottom:'1px solid '+C.border,flexWrap:'wrap'}}>
+            {[
+              {k:'cmas',l:'My CMAs',n:cmas.length},
+              {k:'leads',l:'Valuation Leads',n:valuationLeads.length,badge:newLeadsCount},
+              {k:'page',l:'Public Page',n:null}
+            ].map(function(t){
+              var active=topTab===t.k;
+              return (
+                <button key={t.k} onClick={function(){setTopTab(t.k);}} style={{padding:'12px 18px',background:'none',border:'none',borderBottom:'2px solid '+(active?C.gold:'transparent'),color:active?C.gold:C.muted,fontSize:13,fontWeight:active?700:600,cursor:'pointer',fontFamily:"'DM Sans',sans-serif",display:'flex',alignItems:'center',gap:8,letterSpacing:'0.01em'}}>
+                  <span>{t.l}</span>
+                  {t.n!==null?<span style={{opacity:0.6,fontSize:11}}>{t.n}</span>:null}
+                  {t.badge&&t.badge>0?<span style={{background:C.teal,color:'#fff',fontSize:9,fontWeight:700,padding:'2px 6px',borderRadius:10,minWidth:18,textAlign:'center'}}>{t.badge}</span>:null}
+                </button>
+              );
+            })}
+          </div>
+
+          {topTab==='cmas'?(
+            <div style={{marginTop:-20}}>
+              <CMAList cmas={cmas} onNew={handleNew} onOpen={setEditingId} onDelete={handleDelete}/>
+            </div>
+          ):null}
+
+          {topTab==='leads'?(
+            <ValuationLeadsList
+              leads={valuationLeads}
+              config={pageConfig}
+              onConvert={handleLeadConvert}
+              onDelete={handleLeadDelete}
+              onMarkContacted={handleLeadMarkContacted}
+              onEditPage={function(){setTopTab('page');}}
+            />
+          ):null}
+
+          {topTab==='page'?(
+            <ValuationPageEditor
+              config={pageConfig}
+              onSave={handlePageSave}
+              onBack={function(){setTopTab('cmas');}}
+            />
+          ):null}
+        </div>
+      )}
+    </div>
+  );
+}
+
+window._sf_CMAManager=CMAManager;
+ReactDOM.render(<CMAManager/>, document.getElementById('cma-root'));
+})();
+if(window._sfLoadTick)window._sfLoadTick();
+</script>
+
+<!-- ══════ CMA PHASE 2: PDF + EMAIL ══════ -->
+<script>
+
+// ═══════════════════════════════════════════════════════════════
+// CMA PHASE 2: PDF GENERATOR + EMAIL COMPOSER
+// ═══════════════════════════════════════════════════════════════
+
+// Lazy-load jsPDF + AutoTable from CDN. Returns a promise that resolves
+// once both globals (window.jspdf and the autotable plugin) are ready.
+window._sfLoadJsPDF = function(){
+  if(window._sfJsPDFReady) return window._sfJsPDFReady;
+  window._sfJsPDFReady = new Promise(function(resolve, reject){
+    function loadScript(src){
+      return new Promise(function(res, rej){
+        var s = document.createElement('script');
+        s.src = src; s.async = true;
+        s.onload = function(){ res(); };
+        s.onerror = function(){ rej(new Error('Failed to load '+src)); };
+        document.head.appendChild(s);
+      });
+    }
+    loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js')
+      .then(function(){ return loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js'); })
+      .then(resolve)
+      .catch(function(err){
+        console.error('jsPDF load error:', err);
+        if(window._sfShowToast) window._sfShowToast('Could not load PDF library. Check your connection.', 'error');
+        reject(err);
+      });
+  });
+  return window._sfJsPDFReady;
+};
+
+// Build the CMA PDF. Returns a jsPDF instance (caller decides save vs. dataURL).
+window._sfBuildCMAPDF = function(cma, agent){
+  var jsPDFCtor = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+  if(!jsPDFCtor) throw new Error('jsPDF not loaded');
+
+  var doc = new jsPDFCtor({ unit:'pt', format:'letter' });
+  var W = doc.internal.pageSize.getWidth();   // 612
+  var H = doc.internal.pageSize.getHeight();  // 792
+
+  // Brand colors (RGB tuples for jsPDF)
+  var NAVY = [8, 24, 40];
+  var TEAL = [15, 160, 160];
+  var GOLD = [212, 168, 67];
+  var WHITE = [255, 255, 255];
+  var GREY_DARK = [60, 80, 100];
+  var GREY_MID = [120, 140, 160];
+  var GREY_LIGHT = [240, 244, 248];
+
+  function fmtMoney(n){ if(!n && n!==0) return '—'; return '$'+Math.round(n).toLocaleString(); }
+  function fmtMoneyK(n){ if(!n && n!==0) return '—'; if(n>=1000000) return '$'+(n/1000000).toFixed(2)+'M'; return '$'+Math.round(n/1000)+'K'; }
+  function fmtDate(d){ if(!d) return '—'; try{ return new Date(d).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}); }catch(e){ return d; } }
+
+  // ── Page 1: Cover ──────────────────────────────────────
+  // Navy hero band
+  doc.setFillColor(NAVY[0], NAVY[1], NAVY[2]);
+  doc.rect(0, 0, W, 320, 'F');
+
+  // Gold accent bar
+  doc.setFillColor(GOLD[0], GOLD[1], GOLD[2]);
+  doc.rect(0, 320, W, 4, 'F');
+
+  // Title
+  doc.setTextColor(GOLD[0], GOLD[1], GOLD[2]);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.text('COMPARATIVE MARKET ANALYSIS', 48, 80, { charSpace: 2 });
+
+  doc.setTextColor(WHITE[0], WHITE[1], WHITE[2]);
+  doc.setFontSize(28);
+  doc.setFont('helvetica', 'bold');
+  // Subject address (wrap if long)
+  var addrLines = doc.splitTextToSize(cma.subjectAddress || 'Subject Property', W - 96);
+  doc.text(addrLines, 48, 130);
+
+  // Recommended price banner
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(180, 200, 220);
+  doc.text('RECOMMENDED LIST PRICE', 48, 210, { charSpace: 1.5 });
+
+  doc.setTextColor(GOLD[0], GOLD[1], GOLD[2]);
+  doc.setFontSize(42);
+  doc.setFont('helvetica', 'bold');
+  doc.text(fmtMoney(cma.recommendedMid), 48, 250);
+
+  if(cma.recommendedLow && cma.recommendedHigh){
+    doc.setTextColor(180, 200, 220);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Range: ' + fmtMoneyK(cma.recommendedLow) + ' – ' + fmtMoneyK(cma.recommendedHigh), 48, 275);
+  }
+
+  // Prepared-for / Prepared-by panel
+  var pY = 380;
+  doc.setTextColor(GREY_MID[0], GREY_MID[1], GREY_MID[2]);
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'bold');
+  doc.text('PREPARED FOR', 48, pY, { charSpace: 1.5 });
+  doc.text('PREPARED BY', W/2 + 8, pY, { charSpace: 1.5 });
+
+  doc.setTextColor(NAVY[0], NAVY[1], NAVY[2]);
+  doc.setFontSize(14);
+  doc.text(cma.contactName || 'Property Owner', 48, pY + 22);
+  doc.text(agent.name || 'Your Agent', W/2 + 8, pY + 22);
+
+  doc.setTextColor(GREY_DARK[0], GREY_DARK[1], GREY_DARK[2]);
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  if(agent.office) doc.text(agent.office, W/2 + 8, pY + 40);
+  if(agent.email)  doc.text(agent.email,  W/2 + 8, pY + 56);
+  if(agent.phone)  doc.text(agent.phone,  W/2 + 8, pY + 72);
+
+  // Date
+  doc.setTextColor(GREY_MID[0], GREY_MID[1], GREY_MID[2]);
+  doc.setFontSize(9);
+  doc.text('Report Date: ' + fmtDate(new Date().toISOString()), 48, H - 60);
+  doc.text('Page 1 of 3', W - 48, H - 60, { align:'right' });
+
+  // ── Page 2: Subject + Comps ────────────────────────────
+  doc.addPage();
+
+  // Header strip
+  doc.setFillColor(NAVY[0], NAVY[1], NAVY[2]);
+  doc.rect(0, 0, W, 60, 'F');
+  doc.setFillColor(GOLD[0], GOLD[1], GOLD[2]);
+  doc.rect(0, 60, W, 2, 'F');
+  doc.setTextColor(WHITE[0], WHITE[1], WHITE[2]);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.text('SUBJECT PROPERTY & COMPARABLES', 48, 38, { charSpace: 1.5 });
+
+  // Subject details panel
+  var sY = 100;
+  doc.setTextColor(NAVY[0], NAVY[1], NAVY[2]);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(14);
+  doc.text('Subject Property', 48, sY);
+
+  doc.setFillColor(GREY_LIGHT[0], GREY_LIGHT[1], GREY_LIGHT[2]);
+  doc.roundedRect(40, sY + 14, W - 80, 100, 6, 6, 'F');
+
+  var subjRows = [
+    ['Address', cma.subjectAddress || '—'],
+    ['Type / Condition', (cma.subjectType||'—') + ' • ' + (cma.subjectCondition||'—')],
+    ['Beds / Baths', (cma.subjectBeds||0) + ' bed / ' + (cma.subjectBaths||0) + ' bath'],
+    ['Interior / Lot', (cma.subjectSqft||0).toLocaleString() + ' sqft / ' + (cma.subjectLot||0).toLocaleString() + ' sqft lot'],
+    ['Year Built', cma.subjectYear || '—']
+  ];
+  var rowY = sY + 32;
+  doc.setFontSize(9.5);
+  subjRows.forEach(function(r){
+    doc.setTextColor(GREY_MID[0], GREY_MID[1], GREY_MID[2]);
+    doc.setFont('helvetica', 'bold');
+    doc.text(r[0], 56, rowY);
+    doc.setTextColor(NAVY[0], NAVY[1], NAVY[2]);
+    doc.setFont('helvetica', 'normal');
+    doc.text(String(r[1]), 180, rowY);
+    rowY += 14;
+  });
+
+  if(cma.subjectFeatures){
+    var featY = sY + 130;
+    doc.setTextColor(GREY_MID[0], GREY_MID[1], GREY_MID[2]);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text('NOTABLE FEATURES', 48, featY, { charSpace: 1.2 });
+    doc.setTextColor(GREY_DARK[0], GREY_DARK[1], GREY_DARK[2]);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    var featLines = doc.splitTextToSize(cma.subjectFeatures, W - 96);
+    doc.text(featLines, 48, featY + 16);
+  }
+
+  // Comps table
+  var compTableY = 290;
+  doc.setTextColor(NAVY[0], NAVY[1], NAVY[2]);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(14);
+  doc.text('Comparable Sales', 48, compTableY);
+
+  var compHead = [['Address','Sold','Date','Bd','Ba','Sqft','Cond','Adjusted']];
+  var compBody = (cma.comps||[]).map(function(c){
+    return [
+      c.address || '—',
+      fmtMoneyK(c.soldPrice),
+      c.soldDate ? new Date(c.soldDate).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '—',
+      String(c.beds||0),
+      String(c.baths||0),
+      (c.sqft||0).toLocaleString(),
+      (c.condition||'—').slice(0,4),
+      fmtMoneyK(c.adjustedPrice)
+    ];
+  });
+
+  if(doc.autoTable){
+    doc.autoTable({
+      head: compHead,
+      body: compBody,
+      startY: compTableY + 14,
+      margin: { left: 40, right: 40 },
+      styles: { font:'helvetica', fontSize: 9, cellPadding: 6, textColor: GREY_DARK },
+      headStyles: { fillColor: NAVY, textColor: WHITE, fontStyle:'bold', fontSize: 9, cellPadding: 7 },
+      alternateRowStyles: { fillColor: GREY_LIGHT },
+      columnStyles: {
+        0: { cellWidth: 'auto' },
+        1: { halign: 'right' },
+        2: { halign: 'center' },
+        3: { halign: 'center', cellWidth: 28 },
+        4: { halign: 'center', cellWidth: 28 },
+        5: { halign: 'right', cellWidth: 50 },
+        6: { halign: 'center', cellWidth: 40 },
+        7: { halign: 'right', fontStyle: 'bold', textColor: GOLD, cellWidth: 70 }
+      }
+    });
+  }
+
+  doc.setTextColor(GREY_MID[0], GREY_MID[1], GREY_MID[2]);
+  doc.setFontSize(9);
+  doc.text('Adjustments: $' + (cma.adjPerSqft||200) + '/sqft • $' + (cma.adjPerBed||8000).toLocaleString() + '/bed • $' + (cma.adjPerBath||5000).toLocaleString() + '/bath', 48, H - 78);
+  doc.text('Page 2 of 3', W - 48, H - 60, { align:'right' });
+  doc.text('CMA for ' + (cma.subjectAddress||''), 48, H - 60);
+
+  // ── Page 3: Recommendation + Methodology ──────────────
+  doc.addPage();
+
+  doc.setFillColor(NAVY[0], NAVY[1], NAVY[2]);
+  doc.rect(0, 0, W, 60, 'F');
+  doc.setFillColor(GOLD[0], GOLD[1], GOLD[2]);
+  doc.rect(0, 60, W, 2, 'F');
+  doc.setTextColor(WHITE[0], WHITE[1], WHITE[2]);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.text('PRICING RECOMMENDATION', 48, 38, { charSpace: 1.5 });
+
+  // Big price card
+  var pcY = 110;
+  doc.setFillColor(GREY_LIGHT[0], GREY_LIGHT[1], GREY_LIGHT[2]);
+  doc.roundedRect(40, pcY, W - 80, 180, 8, 8, 'F');
+
+  doc.setTextColor(GOLD[0], GOLD[1], GOLD[2]);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.text('RECOMMENDED LIST PRICE', W/2, pcY + 36, { align:'center', charSpace: 1.5 });
+
+  doc.setTextColor(NAVY[0], NAVY[1], NAVY[2]);
+  doc.setFontSize(48);
+  doc.text(fmtMoney(cma.recommendedMid), W/2, pcY + 90, { align:'center' });
+
+  if(cma.recommendedLow && cma.recommendedHigh){
+    // Range bar
+    var barY = pcY + 130;
+    var barX = 80;
+    var barW = W - 160;
+    doc.setDrawColor(GREY_MID[0], GREY_MID[1], GREY_MID[2]);
+    doc.setLineWidth(0.8);
+    doc.line(barX, barY, barX + barW, barY);
+    // Markers
+    doc.setFillColor(TEAL[0], TEAL[1], TEAL[2]);
+    doc.circle(barX, barY, 5, 'F');
+    doc.circle(barX + barW, barY, 5, 'F');
+    doc.setFillColor(GOLD[0], GOLD[1], GOLD[2]);
+    doc.circle(barX + barW/2, barY, 8, 'F');
+
+    doc.setTextColor(GREY_DARK[0], GREY_DARK[1], GREY_DARK[2]);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.text(fmtMoneyK(cma.recommendedLow),  barX, barY + 22, { align:'center' });
+    doc.text(fmtMoneyK(cma.recommendedHigh), barX + barW, barY + 22, { align:'center' });
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(GOLD[0], GOLD[1], GOLD[2]);
+    doc.text(fmtMoneyK(cma.recommendedMid), barX + barW/2, barY + 22, { align:'center' });
+  }
+
+  // Methodology
+  var mY = 330;
+  doc.setTextColor(NAVY[0], NAVY[1], NAVY[2]);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(13);
+  doc.text('How This Price Was Determined', 48, mY);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.setTextColor(GREY_DARK[0], GREY_DARK[1], GREY_DARK[2]);
+  var methodText =
+    'This recommendation is based on ' + (cma.comps||[]).length + ' comparable recent sales in the area. Each comp ' +
+    'was adjusted for differences from your property in interior square footage, bedroom and bathroom count, ' +
+    'and overall condition. The "Adjusted" price column shows what each comp would have sold for if it had ' +
+    'matched your property exactly.\n\n' +
+    'The recommended price represents the average of the adjusted comp values. The low and high range reflects ' +
+    'natural market spread and gives you flexibility in your pricing strategy. Final pricing should also factor ' +
+    'in current inventory, days-on-market trends, and any unique features of your property not captured in the data above.';
+  var methodLines = doc.splitTextToSize(methodText, W - 96);
+  doc.text(methodLines, 48, mY + 22);
+
+  // Next steps
+  var nY = 530;
+  doc.setTextColor(NAVY[0], NAVY[1], NAVY[2]);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(13);
+  doc.text('Next Steps', 48, nY);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.setTextColor(GREY_DARK[0], GREY_DARK[1], GREY_DARK[2]);
+  var nextSteps = [
+    '1. Review this analysis and let me know if anything stands out or needs clarification.',
+    '2. We can walk through the comps in person — seeing them often helps the numbers click.',
+    '3. When you\'re ready, we\'ll lock in a list price and discuss pre-listing prep, photography, and timing.'
+  ];
+  doc.text(nextSteps.join('\n\n'), 48, nY + 22);
+
+  // Footer
+  var fY = H - 90;
+  doc.setDrawColor(GREY_MID[0], GREY_MID[1], GREY_MID[2]);
+  doc.setLineWidth(0.5);
+  doc.line(48, fY, W - 48, fY);
+
+  doc.setTextColor(NAVY[0], NAVY[1], NAVY[2]);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.text(agent.name || 'Your Agent', 48, fY + 20);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(GREY_DARK[0], GREY_DARK[1], GREY_DARK[2]);
+  var contactBits = [];
+  if(agent.office) contactBits.push(agent.office);
+  if(agent.phone)  contactBits.push(agent.phone);
+  if(agent.email)  contactBits.push(agent.email);
+  doc.text(contactBits.join(' • '), 48, fY + 36);
+
+  doc.setTextColor(GREY_MID[0], GREY_MID[1], GREY_MID[2]);
+  doc.setFontSize(9);
+  doc.text('Page 3 of 3', W - 48, H - 60, { align:'right' });
+  doc.text('Generated with SphereFlow', 48, H - 60);
+
+  return doc;
+};
+
+// Generate + download a CMA PDF
+window._sfDownloadCMAPDF = async function(cma){
+  try{
+    if(window._sfShowToast) window._sfShowToast('Preparing PDF…', 'info');
+    await window._sfLoadJsPDF();
+    var agent = {
+      name:    window._sfUserName  || 'Your Agent',
+      office:  window._sfUserOffice || '',
+      phone:   window._sfUserPhone  || '',
+      email:   window._sfUserEmail  || ''
+    };
+    var doc = window._sfBuildCMAPDF(cma, agent);
+    var safeAddr = (cma.subjectAddress||'cma').replace(/[^a-z0-9]+/gi,'-').replace(/(^-|-$)/g,'').slice(0,60).toLowerCase();
+    var datePart = new Date().toISOString().slice(0,10);
+    doc.save('CMA-' + safeAddr + '-' + datePart + '.pdf');
+    if(window._sfShowToast) window._sfShowToast('PDF downloaded', 'success');
+    return true;
+  }catch(err){
+    console.error('CMA PDF error:', err);
+    if(window._sfShowToast) window._sfShowToast('PDF generation failed', 'error');
+    return false;
+  }
+};
+
+// Generate PDF, return a data URL (for email preview / future upload)
+window._sfGetCMAPDFDataURL = async function(cma){
+  await window._sfLoadJsPDF();
+  var agent = {
+    name:    window._sfUserName  || 'Your Agent',
+    office:  window._sfUserOffice || '',
+    phone:   window._sfUserPhone  || '',
+    email:   window._sfUserEmail  || ''
+  };
+  var doc = window._sfBuildCMAPDF(cma, agent);
+  return doc.output('datauristring');
+};
+
+// ── Email Composer Modal ───────────────────────────────
+window._sfOpenCMAEmailModal = function(cma, contact, opts){
+  opts = opts || {};
+  var C = window._sfGetColors ? window._sfGetColors() : {bg:'#081828',bg2:'#0C1E2E',card:'#0F2336',border:'rgba(255,255,255,0.08)',teal:'#0FA0A0',teal2:'#0B7A75',gold:'#D4A843',white:'#F0F4F8',muted:'#6B8BA4',green:'#2ECC71',red:'#E74C3C'};
+
+  // Remove any existing modal
+  var existing = document.getElementById('sf-cma-email-modal');
+  if(existing) existing.remove();
+
+  var agentName = window._sfUserName || 'Your Agent';
+  var contactFirst = contact && contact.firstName ? contact.firstName : (cma.contactName ? cma.contactName.split(' ')[0] : 'there');
+  var defaultSubject = 'Your CMA for ' + (cma.subjectAddress || 'your home');
+  var fmtMoney = function(n){ if(!n && n!==0) return ''; return '$'+Math.round(n).toLocaleString(); };
+  var defaultBody =
+    'Hi ' + contactFirst + ',\n\n' +
+    'As promised, here\'s the comparative market analysis for ' + (cma.subjectAddress || 'your property') + '.\n\n' +
+    'Based on ' + (cma.comps||[]).length + ' recent comparable sales in the area, my recommended list price is ' +
+    fmtMoney(cma.recommendedMid) + ', with a working range of ' + fmtMoney(cma.recommendedLow) + ' – ' + fmtMoney(cma.recommendedHigh) + '.\n\n' +
+    'The full report is attached. Let me know if you have questions, or if you\'d like to walk through the comps together — sometimes seeing them in person makes the numbers click.\n\n' +
+    'Talk soon,\n' + agentName;
+
+  var modal = document.createElement('div');
+  modal.id = 'sf-cma-email-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;font-family:DM Sans,sans-serif;';
+
+  modal.innerHTML =
+    '<div style="background:'+C.card+';border:1px solid '+C.border+';border-radius:14px;max-width:620px;width:100%;max-height:90vh;overflow-y:auto;padding:24px;color:'+C.white+';">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">' +
+        '<div style="font-size:16px;font-weight:700;">Send CMA via Email</div>' +
+        '<button id="sf-cma-modal-close" style="background:none;border:none;color:'+C.muted+';font-size:22px;cursor:pointer;line-height:1;">×</button>' +
+      '</div>' +
+      '<div style="margin-bottom:14px;">' +
+        '<label style="display:block;font-size:11px;color:'+C.muted+';font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">To</label>' +
+        '<input id="sf-cma-to" type="email" value="'+(contact && contact.email ? contact.email : '')+'" placeholder="recipient@email.com" style="width:100%;padding:10px 12px;background:'+C.bg2+';border:1px solid '+C.border+';border-radius:8px;color:'+C.white+';font-size:13px;font-family:DM Sans,sans-serif;box-sizing:border-box;"/>' +
+      '</div>' +
+      '<div style="margin-bottom:14px;">' +
+        '<label style="display:block;font-size:11px;color:'+C.muted+';font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Subject</label>' +
+        '<input id="sf-cma-subject" type="text" value="'+defaultSubject.replace(/"/g,'&quot;')+'" style="width:100%;padding:10px 12px;background:'+C.bg2+';border:1px solid '+C.border+';border-radius:8px;color:'+C.white+';font-size:13px;font-family:DM Sans,sans-serif;box-sizing:border-box;"/>' +
+      '</div>' +
+      '<div style="margin-bottom:14px;">' +
+        '<label style="display:block;font-size:11px;color:'+C.muted+';font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Message</label>' +
+        '<textarea id="sf-cma-body" rows="10" style="width:100%;padding:12px;background:'+C.bg2+';border:1px solid '+C.border+';border-radius:8px;color:'+C.white+';font-size:13px;font-family:DM Sans,sans-serif;box-sizing:border-box;resize:vertical;line-height:1.5;"></textarea>' +
+      '</div>' +
+      '<div style="padding:12px 14px;background:rgba(15,160,160,0.08);border:1px solid rgba(15,160,160,0.25);border-radius:8px;margin-bottom:18px;font-size:12px;color:'+C.teal+';">' +
+        '📎 The CMA will be downloaded as a PDF for you to attach manually in your email client.' +
+      '</div>' +
+      '<div style="display:flex;justify-content:flex-end;gap:8px;">' +
+        '<button id="sf-cma-modal-cancel" style="padding:10px 18px;border-radius:8px;background:transparent;border:1px solid '+C.border+';color:'+C.muted+';font-size:12.5px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;">Cancel</button>' +
+        '<button id="sf-cma-modal-send" style="padding:10px 20px;border-radius:8px;background:'+C.gold+';border:none;color:#081828;font-size:12.5px;font-weight:700;cursor:pointer;font-family:DM Sans,sans-serif;">Download PDF & Open Email</button>' +
+      '</div>' +
+    '</div>';
+
+  document.body.appendChild(modal);
+
+  // Set textarea value via JS to preserve newlines
+  var bodyField = document.getElementById('sf-cma-body');
+  if(bodyField) bodyField.value = defaultBody;
+
+  function close(){ modal.remove(); }
+  document.getElementById('sf-cma-modal-close').onclick = close;
+  document.getElementById('sf-cma-modal-cancel').onclick = close;
+  modal.addEventListener('click', function(e){ if(e.target === modal) close(); });
+
+  document.getElementById('sf-cma-modal-send').onclick = async function(){
+    var to = (document.getElementById('sf-cma-to').value || '').trim();
+    var subject = (document.getElementById('sf-cma-subject').value || '').trim();
+    var body = (document.getElementById('sf-cma-body').value || '').trim();
+    if(!to){ if(window._sfShowToast) window._sfShowToast('Recipient email required', 'warning'); return; }
+    if(!subject){ if(window._sfShowToast) window._sfShowToast('Subject required', 'warning'); return; }
+
+    // Download PDF first
+    var ok = await window._sfDownloadCMAPDF(cma);
+    if(!ok) return;
+
+    // Open default mail client with prefilled fields
+    var mailto = 'mailto:' + encodeURIComponent(to) +
+      '?subject=' + encodeURIComponent(subject) +
+      '&body=' + encodeURIComponent(body);
+    // Use a temp link to avoid popup blockers
+    var a = document.createElement('a');
+    a.href = mailto; a.style.display = 'none';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+
+    // Fire callback to log + mark sent
+    if(typeof opts.onSent === 'function') opts.onSent({ to: to, subject: subject, body: body });
+    close();
+  };
+};
+
+</script>
+
+<!-- ══════ CMA PHASE 3: MARKET DATA + VALUATION HELPERS ══════ -->
+<script>
+
+// ═══════════════════════════════════════════════════════════════
+// CMA PHASE 3: GTA MARKET DATA + VALUATION HELPERS
+// ═══════════════════════════════════════════════════════════════
+
+// GTA neighborhood market data. Prices are avg $/sqft for completed sales
+// in the past 6 months (Apr 2026 baseline). Source: manually curated from
+// TRREB/RECO regional stats. Update quarterly.
+//
+// Schema: { city: { neighborhood_lower: { detached, semi, townhouse, condo } } }
+// Values are $/sqft for INTERIOR living area.
+window._sfGTAMarketData = {
+  'brampton': {
+    '_default':     { detached: 540, semi: 490, townhouse: 445, condo: 620 },
+    'mount pleasant': { detached: 620, semi: 555, townhouse: 490, condo: 680 },
+    'springdale':   { detached: 575, semi: 520, townhouse: 465, condo: 640 },
+    'heart lake':   { detached: 555, semi: 505, townhouse: 460, condo: 625 },
+    'sandringham':  { detached: 590, semi: 535, townhouse: 475, condo: 650 },
+    'credit valley': { detached: 650, semi: 580, townhouse: 510, condo: 700 },
+    'bram east':    { detached: 530, semi: 480, townhouse: 435, condo: 610 },
+    'bram west':    { detached: 595, semi: 540, townhouse: 475, condo: 655 },
+    'fletchers meadow': { detached: 570, semi: 515, townhouse: 460, condo: 635 },
+    'northwest brampton': { detached: 580, semi: 525, townhouse: 470, condo: 645 }
+  },
+  'mississauga': {
+    '_default':     { detached: 680, semi: 615, townhouse: 555, condo: 780 },
+    'port credit':  { detached: 920, semi: 780, townhouse: 690, condo: 970 },
+    'lorne park':   { detached: 1050, semi: 850, townhouse: 720, condo: 980 },
+    'streetsville': { detached: 720, semi: 640, townhouse: 570, condo: 810 },
+    'clarkson':     { detached: 780, semi: 680, townhouse: 600, condo: 850 },
+    'meadowvale':   { detached: 620, semi: 565, townhouse: 505, condo: 720 },
+    'churchill meadows': { detached: 670, semi: 605, townhouse: 540, condo: 775 },
+    'erin mills':   { detached: 710, semi: 635, townhouse: 565, condo: 790 },
+    'square one':   { detached: 820, semi: 710, townhouse: 625, condo: 880 },
+    'cooksville':   { detached: 690, semi: 620, townhouse: 555, condo: 770 }
+  },
+  'toronto': {
+    '_default':     { detached: 950, semi: 860, townhouse: 780, condo: 1050 },
+    'downtown':     { detached: 1350, semi: 1180, townhouse: 1050, condo: 1280 },
+    'leslieville':  { detached: 1180, semi: 1050, townhouse: 940, condo: 1140 },
+    'the beaches':  { detached: 1250, semi: 1120, townhouse: 1000, condo: 1200 },
+    'high park':    { detached: 1280, semi: 1140, townhouse: 1020, condo: 1210 },
+    'bloor west':   { detached: 1220, semi: 1100, townhouse: 990, condo: 1160 },
+    'scarborough':  { detached: 720, semi: 650, townhouse: 580, condo: 820 },
+    'etobicoke':    { detached: 880, semi: 790, townhouse: 710, condo: 990 },
+    'north york':   { detached: 960, semi: 870, townhouse: 780, condo: 1040 },
+    'east york':    { detached: 1020, semi: 920, townhouse: 820, condo: 1080 }
+  },
+  'vaughan': {
+    '_default':     { detached: 720, semi: 650, townhouse: 585, condo: 830 },
+    'woodbridge':   { detached: 780, semi: 690, townhouse: 615, condo: 870 },
+    'thornhill':    { detached: 820, semi: 720, townhouse: 640, condo: 900 },
+    'maple':        { detached: 700, semi: 635, townhouse: 575, condo: 815 },
+    'kleinburg':    { detached: 920, semi: 800, townhouse: 700, condo: 950 }
+  },
+  'markham': {
+    '_default':     { detached: 780, semi: 700, townhouse: 625, condo: 880 },
+    'unionville':   { detached: 890, semi: 790, townhouse: 695, condo: 940 },
+    'cathedraltown': { detached: 820, semi: 730, townhouse: 650, condo: 890 },
+    'cornell':      { detached: 740, semi: 670, townhouse: 600, condo: 850 },
+    'berczy':       { detached: 800, semi: 715, townhouse: 635, condo: 895 }
+  },
+  'richmond hill': {
+    '_default':     { detached: 760, semi: 685, townhouse: 615, condo: 870 },
+    'oak ridges':   { detached: 820, semi: 730, townhouse: 650, condo: 900 },
+    'jefferson':    { detached: 800, semi: 715, townhouse: 640, condo: 890 },
+    'bayview hill': { detached: 920, semi: 810, townhouse: 715, condo: 960 }
+  },
+  'oakville': {
+    '_default':     { detached: 920, semi: 800, townhouse: 700, condo: 980 },
+    'glen abbey':   { detached: 950, semi: 825, townhouse: 720, condo: 1000 },
+    'bronte':       { detached: 1050, semi: 890, townhouse: 770, condo: 1060 },
+    'old oakville': { detached: 1280, semi: 1080, townhouse: 920, condo: 1180 },
+    'west oak trails': { detached: 890, semi: 780, townhouse: 685, condo: 960 }
+  },
+  'burlington': {
+    '_default':     { detached: 720, semi: 640, townhouse: 570, condo: 820 },
+    'downtown':     { detached: 890, semi: 770, townhouse: 675, condo: 920 },
+    'aldershot':    { detached: 740, semi: 655, townhouse: 580, condo: 830 },
+    'alton':        { detached: 700, semi: 625, townhouse: 555, condo: 800 },
+    'orchard':      { detached: 760, semi: 675, townhouse: 595, condo: 850 }
+  }
+};
+
+// Extract (city, neighborhood) hints from a free-text address.
+// Returns { city, neighborhood, pricePerSqft } with graceful fallback.
+window._sfMatchMarket = function(address, propertyType){
+  var data = window._sfGTAMarketData || {};
+  var pt = (propertyType || 'detached').toLowerCase();
+  if(['detached','semi','townhouse','condo'].indexOf(pt) === -1) pt = 'detached';
+  var fallback = { city:'GTA', neighborhood:'default', pricePerSqft: 650 };
+
+  if(!address) return fallback;
+  var a = String(address).toLowerCase();
+
+  // Try each city
+  var cityHit = null;
+  Object.keys(data).forEach(function(city){
+    if(cityHit) return;
+    if(a.indexOf(city) !== -1) cityHit = city;
+  });
+
+  if(!cityHit){
+    // Fallback: look for common GTA postal prefixes as a weak hint
+    if(/\bl6[a-z]/i.test(address))     cityHit = 'brampton';
+    else if(/\bl5[a-z]/i.test(address))cityHit = 'mississauga';
+    else if(/\bm[0-9][a-z]/i.test(address)) cityHit = 'toronto';
+  }
+  if(!cityHit) return fallback;
+
+  var cityData = data[cityHit];
+  var nbHit = null;
+  Object.keys(cityData).forEach(function(nb){
+    if(nb === '_default' || nbHit) return;
+    if(a.indexOf(nb) !== -1) nbHit = nb;
+  });
+  var rec = nbHit ? cityData[nbHit] : cityData._default;
+  return {
+    city: cityHit.replace(/\b\w/g, function(c){return c.toUpperCase();}),
+    neighborhood: nbHit ? nbHit.replace(/\b\w/g, function(c){return c.toUpperCase();}) : 'General',
+    pricePerSqft: rec[pt] || rec.detached || 650
+  };
+};
+
+// Compute an instant estimate range from a subject property.
+// Returns { low, mid, high, pricePerSqft, city, neighborhood, confidence }
+window._sfInstantEstimate = function(subject){
+  subject = subject || {};
+  var match = window._sfMatchMarket(subject.address, subject.propertyType);
+  var sqft = parseFloat(subject.sqft) || 0;
+  if(sqft <= 0){
+    return { low:0, mid:0, high:0, pricePerSqft: match.pricePerSqft, city: match.city, neighborhood: match.neighborhood, confidence:'none' };
+  }
+
+  // Condition multipliers
+  var cond = subject.condition || 'good';
+  var condMult = {excellent:1.08, good:1.0, fair:0.92, poor:0.82}[cond] || 1.0;
+
+  // Base estimate
+  var base = sqft * match.pricePerSqft * condMult;
+
+  // Small adjustments for bedroom/bathroom count outside typical range
+  // (typical 3-4bd/2-3ba for detached)
+  var beds = parseFloat(subject.beds) || 0;
+  var baths = parseFloat(subject.baths) || 0;
+  var typicalBeds = (subject.propertyType === 'condo') ? 2 : (subject.propertyType === 'townhouse' ? 3 : 4);
+  var typicalBaths = (subject.propertyType === 'condo') ? 2 : (subject.propertyType === 'townhouse' ? 2.5 : 3);
+  var bedAdj  = (beds - typicalBeds) * 8000;
+  var bathAdj = (baths - typicalBaths) * 5000;
+  var mid = base + bedAdj + bathAdj;
+
+  // ±7% spread
+  var spread = 0.07;
+  var low = Math.round(mid * (1 - spread));
+  var high = Math.round(mid * (1 + spread));
+  mid = Math.round(mid);
+
+  return {
+    low: low, mid: mid, high: high,
+    pricePerSqft: match.pricePerSqft,
+    city: match.city, neighborhood: match.neighborhood,
+    confidence: match.neighborhood !== 'General' ? 'high' : 'medium'
+  };
+};
+
+// Valuation leads storage (keyed by agent slug so multiple agents coexist)
+window._sfValuationLeadsKey = function(slug){ return 'sf_valuation_leads_' + (slug || 'default'); };
+
+window._sfLoadValuationLeads = function(slug){
+  try{
+    var raw = localStorage.getItem(window._sfValuationLeadsKey(slug));
+    if(!raw) return [];
+    var parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  }catch(e){ return []; }
+};
+
+window._sfSaveValuationLeads = function(slug, list){
+  try{ localStorage.setItem(window._sfValuationLeadsKey(slug), JSON.stringify(list)); }catch(e){}
+};
+
+// Agent valuation page config storage
+window._sfLoadValuationPageConfig = function(){
+  try{
+    var raw = localStorage.getItem('sf_valuation_page');
+    if(!raw) return null;
+    return JSON.parse(raw);
+  }catch(e){ return null; }
+};
+
+window._sfSaveValuationPageConfig = function(cfg){
+  try{
+    cfg.updatedAt = new Date().toISOString();
+    localStorage.setItem('sf_valuation_page', JSON.stringify(cfg));
+  }catch(e){}
+};
+
+// Default slug derived from agent name, e.g., "Jag Singh" -> "jag-singh"
+window._sfDefaultValuationSlug = function(){
+  var n = (window._sfUserName || 'agent').toLowerCase();
+  return n.replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 40) || 'agent';
+};
+
+</script>
+
+
+
+<!-- ══════════════════════════════════════════════════
      FEATURE 4: GOAL SETTING & ACCOUNTABILITY
 ══════════════════════════════════════════════════ -->
 <script type="text/babel">
@@ -21252,6 +23085,7 @@ const NAV_TABS_GL = [
   { id:'crm',          label:'Leads',        icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2'/><circle cx='9' cy='7' r='4'/><path d='M23 21v-2a4 4 0 00-3-3.87'/></svg>", minTier:1 },
   { id:'pipeline',     label:'Pipeline',     icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><line x1='18' y1='20' x2='18' y2='10'/><line x1='12' y1='20' x2='12' y2='4'/><line x1='6' y1='20' x2='6' y2='14'/><path d='M3 20h18'/></svg>", minTier:1 },
   { id:'transactions', label:'Deals',        icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2'/><rect x='8' y='2' width='8' height='4' rx='1'/><line x1='9' y1='12' x2='15' y2='12'/><line x1='9' y1='16' x2='15' y2='16'/></svg>", minTier:1 },
+  { id:'cma',          label:'CMAs',         icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 12l2-2 4 4 8-8 4 4'/><path d='M3 21h18'/><path d='M5 21V11'/><path d='M19 21V11'/></svg>", minTier:1 },
   { id:'referral',     label:'Referral',     icon:"<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#D4A843' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M2 14l4-4 3 2 4-4 3 2 4-4'/><path d='M2 14h4l2-2'/><path d='M22 6h-4l-2 2'/><path d='M8 18l2-2 4 2 2-2'/><path d='M2 17l4 1 2-2'/><path d='M22 17l-4 1-2-2'/></svg>", minTier:2 },
 ];
 
